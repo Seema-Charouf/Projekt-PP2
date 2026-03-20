@@ -1,0 +1,508 @@
+
+
+.studi-container {
+  max-width: 1400px;
+}
+
+.studi-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: stretch;
+  margin-top: 1rem;
+}
+
+@media (max-width: 992px) {
+  .studi-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+.studi-main {
+  min-height: 65vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.studi-main-inner {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: #fff;
+  border: 1px solid #333;
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+
+.studi-live-summary {
+  overflow-y: auto;
+}
+
+.studi-live-section {
+  margin-bottom: 1rem;
+}
+
+.studi-live-section:last-child {
+  margin-bottom: 0;
+}
+
+.studi-live-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.studi-live-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.studi-live-list li {
+  padding: 0.35rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.studi-live-list li:last-child {
+  border-bottom: none;
+}
+
+.studi-live-placeholder {
+  color: #999;
+  font-style: italic;
+}
+
+
+.studi-result-box {
+  overflow-y: auto;
+}
+
+.studi-result-hint,
+.studi-result-empty {
+  padding: 1.5rem;
+  color: #666;
+  text-align: center;
+}
+
+.studi-result-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #000;
+}
+
+.studi-result-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.studi-result-card {
+  margin: 0;
+}
+
+.studi-result-card-btn {
+  display: block;
+  width: 100%;
+  padding: 1rem;
+  text-align: left;
+  background: #fff;
+  border: 1px solid #333;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.studi-result-card-btn:hover {
+  background: #f5f5f5;
+}
+
+.studi-result-card-name {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 0.35rem;
+}
+
+.studi-result-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-bottom: 0.35rem;
+}
+
+.studi-result-chip {
+  display: inline-block;
+  padding: 0.2rem 0.45rem;
+  background: #333;
+  color: #fff;
+  border-radius: 0.2rem;
+  font-size: 0.75rem;
+}
+
+.studi-result-card-themes {
+  margin-bottom: 0.35rem;
+}
+
+.studi-result-card-score {
+  margin-top: 0.25rem;
+}
+
+
+.studi-section-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.studi-left {
+  gap: 1.5rem;
+}
+
+.studi-right {
+  position: sticky;
+  top: 1rem;
+}
+
+.studi-right .studi-section-label {
+  margin-bottom: 0.5rem;
+}
+
+.studi-card {
+  background: #fff;
+  border: 1px solid #333;
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.studi-card h3 {
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  color: #000;
+}
+
+
+.studi-dropdown-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .studi-dropdown-group {
+    grid-template-columns: 1fr;
+  }
+}
+
+.studi-dropdown {
+  position: relative;
+}
+
+.studi-dropdown-trigger {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #333;
+  border-radius: 0.375rem;
+  background: #fff;
+  color: #000;
+  font-size: 0.9rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.studi-dropdown-trigger:hover {
+  background: #f5f5f5;
+}
+
+.studi-dropdown-label {
+  font-weight: 600;
+}
+
+.studi-dropdown-count {
+  font-size: 0.8rem;
+  color: #555;
+  margin-top: 0.2rem;
+}
+
+.studi-dropdown-panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 0.25rem;
+  border: 1px solid #333;
+  border-radius: 0.375rem;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 100;
+  max-height: 220px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.studi-dropdown-table {
+  display: flex;
+  flex-direction: column;
+}
+
+.studi-dropdown-row {
+  border-bottom: 1px solid #eee;
+}
+
+.studi-dropdown-row:last-child {
+  border-bottom: none;
+}
+
+.studi-dropdown-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.6rem;
+  margin: 0;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: #000;
+  min-height: 2rem;
+}
+
+.studi-dropdown-cell:hover {
+  background: #f5f5f5;
+}
+
+.studi-dropdown-checkbox {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  accent-color: #333;
+  cursor: pointer;
+}
+
+.studi-dropdown-text {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+.studi-selected-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  min-height: 1.5rem;
+  align-items: center;
+}
+
+.studi-chip {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  background: #333;
+  color: #fff;
+  border-radius: 0.25rem;
+  font-size: 0.8rem;
+}
+
+.studi-chip-empty {
+  color: #666;
+  font-size: 0.8rem;
+  font-style: italic;
+}
+
+
+.studi-card-scroll .studi-scroll-body {
+  max-height: 220px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.studi-modules {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+}
+
+.studi-modules label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  font-weight: 500;
+  margin: 0;
+  color: #000;
+}
+
+.studi-card .list-group-item {
+  border-color: #333;
+  color: #000;
+  background: #fff;
+}
+
+.studi-search-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.studi-search-form input[type="text"] {
+  flex: 1;
+  min-width: 180px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #333;
+  border-radius: 0.375rem;
+  background: #fff;
+  color: #000;
+}
+
+.studi-results-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.studi-results-list li {
+  margin-bottom: 0.5rem;
+}
+
+.studi-results-list li form {
+  display: block;
+}
+
+.studi-results-list .studi-result-link {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  text-decoration: none;
+  color: #000;
+  background: #fff;
+  border: 1px solid #333;
+  transition: background 0.2s, border-color 0.2s;
+  width: 100%;
+  cursor: pointer;
+}
+
+.studi-results-list .studi-result-link:hover {
+  background: #f5f5f5;
+  border-color: #000;
+  color: #000;
+}
+
+.studi-detail-placeholder {
+  padding: 1rem 1.25rem;
+}
+
+.studi-detail-section {
+  margin-bottom: 1rem;
+}
+
+.studi-detail-section:last-child {
+  margin-bottom: 0;
+}
+
+.studi-detail-section h4,
+.studi-detail-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+  color: #666;
+}
+
+.studi-detail-value {
+  font-size: 0.95rem;
+  color: #000;
+}
+
+.studi-detail-section:first-child .studi-detail-value {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+
+.studi-placeholder-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+.studi-placeholder-label {
+  color: #666;
+}
+
+.studi-placeholder-value {
+  color: #999;
+}
+
+.studi-placeholder-hint {
+  font-size: 0.85rem;
+  color: #666;
+  font-style: italic;
+}
+
+.studi-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.studi-tags .badge {
+  font-weight: 500;
+  background: #333 !important;
+  color: #fff !important;
+  border: 1px solid #000;
+}
+
+.studi-themes-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.studi-themes-list li {
+  margin-bottom: 0.4rem;
+}
+
+.studi-themes-list a {
+  color: #000;
+  text-decoration: none;
+}
+
+.studi-themes-list a:hover {
+  text-decoration: underline;
+}
+
+.studi-modules-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.studi-modules-list span {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  background: #f5f5f5;
+  border: 1px solid #333;
+  border-radius: 0.25rem;
+  font-size: 0.9rem;
+  color: #000;
+}
+
+
+.studi-card .badge.bg-primary,
+.studi-card .badge.bg-info {
+  background: #333 !important;
+  color: #fff !important;
+  border: 1px solid #000;
+}

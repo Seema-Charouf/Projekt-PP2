@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Profil bearbeiten</title>
+  <link rel="stylesheet" th:href="@{/css/bootstrap.css}" href="../static/css/bootstrap.css">
+  <link rel="stylesheet" th:href="@{/css/404.css}" href="../static/css/404.css">
+</head>
+<body class="bg-light">
+
+<header>
+  <div class="topnav">
+    <a class="logo">Game of Advisors</a>
+    <a th:href="@{/betreuerProfil}">Home</a>
+  </div>
+</header>
+
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">Profil bearbeiten</h4>
+        </div>
+        <div class="card-body">
+
+          <form th:action="@{/betreuerProfil/editProfile}" th:object="${editProfileForm}" method="post">
+
+            <div class="mb-3">
+              <label for="titel" class="form-label">Titel</label>
+              <select id="titel" class="form-select" th:field="*{titel}">
+                <option th:each="t : ${titelOptions}"
+                        th:value="${t.name()}"
+                        th:text="${t.displayName == '' ? 'Kein Titel' : t.displayName}"
+                        th:selected="${editProfileForm.titel == t.name()}">Titel</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="name" class="form-label">Name</label>
+              <input id="name" type="text" class="form-control"
+                     th:field="*{name}"
+                     th:classappend="${#fields.hasErrors('name')} ? 'is-invalid' : ''"
+                     placeholder="Neuer Name">
+              <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="invalid-feedback"></div>
+            </div>
+
+            <div class="mb-3">
+              <label for="email" class="form-label">E-Mail</label>
+              <input id="email" type="email" class="form-control"
+                     th:field="*{email}"
+                     th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''"
+                     placeholder="neue.email@example.com">
+              <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="invalid-feedback"></div>
+            </div>
+
+            <div class="mb-3">
+              <label for="phone" class="form-label">Telefon</label>
+              <input id="phone" type="tel" class="form-control"
+                     th:field="*{phone}"
+                     th:classappend="${#fields.hasErrors('phone')} ? 'is-invalid' : ''"
+                     placeholder="+49123456789">
+              <div th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" class="invalid-feedback"></div>
+              <small class="form-text text-muted">Format: +49123456789 (10-15 Ziffern)</small>
+            </div>
+
+            <div class="mb-3">
+              <label for="raum" class="form-label">Raum</label>
+              <input id="raum" type="text" class="form-control"
+                     th:field="*{raum}"
+                     th:classappend="${#fields.hasErrors('raum')} ? 'is-invalid' : ''"
+                     placeholder="25.12.02.03">
+              <div th:if="${#fields.hasErrors('raum')}" th:errors="*{raum}" class="invalid-feedback"></div>
+              <small class="form-text text-muted">Format: Bereich.Gebäude.Etage.Raum (z.B. 25.12.02.03)</small>
+            </div>
+
+            <div class="d-flex justify-content-between">
+              <a th:href="@{/betreuerProfil}" class="btn btn-outline-secondary">Abbrechen</a>
+              <button type="submit" class="btn btn-primary">Speichern</button>
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script th:src="@{/js/bootstrap.bundle.js}"></script>
+</body>
+</html>

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Verwaltung</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+
+<header class="header">
+    <h1>Game of Advisors</h1>
+    <div class="header-buttons">
+        <a th:href="@{/homestudi/themen}" class="btn1">Alle Themen</a>
+        <a th:href="@{/betreuerProfil}" class="btn1">Betreuer</a>
+        <a th:href="@{/homestudi}" class="btn1">Student</a>
+        <a href="#" class="btn2" id="editProfileBtn">Edit Profile</a>
+    </div>
+</header>
+
+<body>
+
+<div class="searchMe d-flex align-items-center">
+    <input type="text" placeholder="Suche nach Name, Rolle, GitHub-ID, Modul..." id="search" class="form-control">
+    <span class="search-icon" id="searchBtn" role="button" title="Suchen">&#128269;</span>
+</div>
+
+<table class="table custom-table" id="userTable">
+    <thead>
+    <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Rolle</th>
+        <th>GitHub-ID</th>
+        <th>Module</th>
+        <th>Edit</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="user, stat : ${adminUsers}"
+        th:data-row="${stat.index}"
+        th:data-name="${user.name()}"
+        th:data-rolle="${user.role()}"
+        th:data-github="${user.githubId()}"
+        th:data-module="${user.modules()}">
+        <td th:text="${stat.count}">1</td>
+        <td class="col-name" th:text="${user.name()}">Name</td>
+        <td class="col-rolle" th:text="${user.role()}">Rolle</td>
+        <td class="col-github" th:text="${user.githubId()}">GitHub-ID</td>
+        <td class="col-module" th:text="${user.modules()}">Module</td>
+        <td>
+            <a href="#" class="editBTN1" data-action="edit">Bearbeiten</a> /
+            <a href="#" class="editBTN1" data-action="delete">Löschen</a>
+        </td>
+    </tr>
+    
+    <tr data-row="dummy-seema" data-name="Seema" data-rolle="Admin" data-github="seema@example.com" data-module="Programmierpraktikum1">
+        <td th:text="${#lists.size(adminUsers) + 1}">1</td>
+        <td class="col-name">Seema</td>
+        <td class="col-rolle">Admin</td>
+        <td class="col-github">seema@example.com</td>
+        <td class="col-module">Programmierpraktikum1</td>
+        <td>
+            <a href="#" class="editBTN1" data-action="edit">Bearbeiten</a> /
+            <a href="#" class="editBTN1" data-action="delete">Löschen</a>
+        </td>
+    </tr>
+    <tr th:if="${#lists.isEmpty(adminUsers)}">
+        <td colspan="6" class="text-muted">Keine Einträge in der Datenbank (Betreuer, Studenten oder Admin-IDs konfigurieren).</td>
+    </tr>
+    </tbody>
+</table>
+
+
+<div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">User bearbeiten</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm">
+                    <input type="hidden" id="editRowIndex">
+                    <div class="mb-3">
+                        <label for="editName" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="editName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editRolle" class="form-label">Rolle</label>
+                        <select class="form-select" id="editRolle">
+                            <option value="Admin">Admin</option>
+                            <option value="Betreuer">Betreuer</option>
+                            <option value="Student">Student</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editGithub" class="form-label">GitHub-ID</label>
+                        <input type="text" class="form-control" id="editGithub" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editModule" class="form-label">Module</label>
+                        <input type="text" class="form-control" id="editModule">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                <button type="button" class="btn btn-primary" id="saveEditBtn">Speichern</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="addAdminModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Admin hinzufügen</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addAdminForm">
+                    <div class="mb-3">
+                        <label for="addName" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="addName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="addRolle" class="form-label">Rolle</label>
+                        <select class="form-select" id="addRolle">
+                            <option value="Admin">Admin</option>
+                            <option value="Betreuer">Betreuer</option>
+                            <option value="Student">Student</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="addGithub" class="form-label">GitHub-ID</label>
+                        <input type="text" class="form-control" id="addGithub" placeholder="E-Mail oder numerische ID" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="addModule" class="form-label">Module</label>
+                        <input type="text" class="form-control" id="addModule" placeholder="z.B. Programmierpraktikum1">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                <button type="button" class="btn btn-primary" id="saveAddAdminBtn">Hinzufügen</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">User löschen</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p id="deleteConfirmText">Möchtest du diesen User wirklich löschen?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Löschen</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/bootstrap.bundle.js}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const editModal = new bootstrap.Modal(document.getElementById('editModal'));
+    const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    const addAdminModal = new bootstrap.Modal(document.getElementById('addAdminModal'));
+    const tbody = document.querySelector('#userTable tbody');
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+    const searchInput = document.getElementById('search');
+    const searchBtn = document.getElementById('searchBtn');
+
+    function doSearch() {
+        const term = (searchInput.value || '').trim().toLowerCase();
+        tbody.querySelectorAll('tr').forEach(tr => {
+            const name = (tr.dataset.name || '').toLowerCase();
+            const rolle = (tr.dataset.rolle || '').toLowerCase();
+            const github = (tr.dataset.github || '').toLowerCase();
+            const module = (tr.dataset.module || '').toLowerCase();
+            const match = !term || name.includes(term) || rolle.includes(term) || github.includes(term) || module.includes(term);
+            tr.style.display = match ? '' : 'none';
+        });
+    }
+
+    searchBtn.addEventListener('click', doSearch);
+    searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); doSearch(); }
+    });
+
+    document.getElementById('editProfileBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('addAdminForm').reset();
+        addAdminModal.show();
+    });
+
+    document.getElementById('saveAddAdminBtn').addEventListener('click', function() {
+        const name = document.getElementById('addName').value.trim();
+        const github = document.getElementById('addGithub').value.trim();
+        if (!name || !github) return;
+        const rolle = document.getElementById('addRolle').value;
+        const module = document.getElementById('addModule').value.trim();
+        const rowCount = tbody.querySelectorAll('tr').length;
+        const tr = document.createElement('tr');
+        tr.dataset.row = rowCount;
+        tr.dataset.name = name;
+        tr.dataset.rolle = rolle;
+        tr.dataset.github = github;
+        tr.dataset.module = module;
+        tr.innerHTML = '<td>' + (rowCount + 1) + '</td>' +
+            '<td class="col-name">' + name + '</td>' +
+            '<td class="col-rolle">' + rolle + '</td>' +
+            '<td class="col-github">' + github + '</td>' +
+            '<td class="col-module">' + module + '</td>' +
+            '<td><a href="#" class="editBTN1" data-action="edit">Bearbeiten</a> / ' +
+            '<a href="#" class="editBTN1" data-action="delete">Löschen</a></td>';
+        tbody.appendChild(tr);
+        updateRowNumbers();
+        addAdminModal.hide();
+    });
+
+    tbody.addEventListener('click', function(e) {
+        const btn = e.target.closest('.editBTN1[data-action="edit"]');
+        if (btn) {
+            e.preventDefault();
+            const row = btn.closest('tr');
+            document.getElementById('editRowIndex').value = row.dataset.row;
+            document.getElementById('editName').value = row.dataset.name;
+            document.getElementById('editRolle').value = row.dataset.rolle;
+            document.getElementById('editGithub').value = row.dataset.github;
+            document.getElementById('editModule').value = row.dataset.module || '';
+            editModal.show();
+            return;
+        }
+        const delBtn = e.target.closest('.editBTN1[data-action="delete"]');
+        if (delBtn) {
+            e.preventDefault();
+            const row = delBtn.closest('tr');
+            document.getElementById('deleteConfirmText').textContent =
+                'Möchtest du "' + row.dataset.name + '" wirklich löschen?';
+            confirmDeleteBtn.dataset.row = row.dataset.row;
+            deleteModal.show();
+        }
+    });
+
+    confirmDeleteBtn.addEventListener('click', function() {
+        const rowIndex = this.dataset.row;
+        const row = tbody.querySelector('tr[data-row="' + rowIndex + '"]');
+        if (row) row.remove();
+        updateRowNumbers();
+        deleteModal.hide();
+    });
+
+    document.getElementById('saveEditBtn').addEventListener('click', function() {
+        const rowIndex = document.getElementById('editRowIndex').value;
+        const row = tbody.querySelector('tr[data-row="' + rowIndex + '"]');
+        if (row) {
+            row.dataset.name = document.getElementById('editName').value;
+            row.dataset.rolle = document.getElementById('editRolle').value;
+            row.dataset.github = document.getElementById('editGithub').value;
+            row.dataset.module = document.getElementById('editModule').value;
+            row.querySelector('.col-name').textContent = row.dataset.name;
+            row.querySelector('.col-rolle').textContent = row.dataset.rolle;
+            row.querySelector('.col-github').textContent = row.dataset.github;
+            row.querySelector('.col-module').textContent = row.dataset.module;
+        }
+        editModal.hide();
+    });
+
+    function updateRowNumbers() {
+        tbody.querySelectorAll('tr').forEach((tr, i) => {
+            tr.dataset.row = i;
+            tr.querySelector('td:first-child').textContent = i + 1;
+        });
+    }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fad6f3;
+    padding: 10px 30px;
+}
+
+.header-buttons a {
+    padding: 10px 20px;
+    border-radius: 10px;
+    color: white;
+    text-decoration: snow;
+    margin-left: 10px;
+    display: inline-flex;
+}
+h1 {
+    font-family: "Source Code Pro Black";
+    color: #e669c3;
+    -webkit-text-stroke: 1px black;
+}
+
+.btn1 { background-color: cornflowerblue; }
+.btn1:hover { background-color: #0056b3; }
+
+.btn2 { background-color: darkviolet; }
+.btn2:hover { background-color: #6a1395; }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.custom-table thead th{
+    background-color: deeppink;
+    color: white;
+    padding: 15px;
+}
+
+.custom-table th, .custom-table td{
+    background-color: #e2e2ff;
+    color: #dc228d;
+    padding: 15px;
+    font-family: "Dubai Medium";
+}
+.custom-table th, .custom-table td {
+    border: 3px solid black;
+}
+
+.editBTN1:link {
+    color: hotpink;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 3px 5px;
+}
+.editBTN1:visited {
+    color: #ff0072;
+    font-weight: bold;
+    text-decoration: none;
+}
+.editBTN1:hover {
+    color: #3e75ec;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 3px 5px;
+}
+.editBTN1:active {
+    color: #6f42c1;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.userContainer {
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 110px;
+}
+
+.addUser {
+    border: 2px solid #6495ed;
+    color: #6495ed;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 6px 20px;
+    font-size: larger;
+    transition: all 0.3s ease;
+    border-radius: 30px;
+}
+.addUser:hover {
+    background-color: #3e75ec;
+    color: white;
+}
+.searchMe {
+    position: relative;
+    display: flex;
+    gap: 8px;
+    margin-bottom: 1rem;
+}
+.searchMe .form-control {
+    max-width: 400px;
+}
+.searchMe .search-icon {
+    cursor: pointer;
+    padding: 8px 12px;
+    font-size: 1.2rem;
+    user-select: none;
+}
+.searchMe .search-icon:hover {
+    opacity: 0.8;
+}

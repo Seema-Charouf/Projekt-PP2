@@ -1,0 +1,32 @@
+body {
+background-color: lightblue !important;
+}
+option{
+background-color: #b1f7ff;
+}
+.bg-primary{
+background-color:  lightblue !important;
+font-style: italic;
+text-color: black;
+text-shadow: 2px 2px 4px;
+}
+ .btn.btn-primary{
+ background-color: lightgrey !important;
+  color: black;
+  transition: all 0.7s ease;
+}
+.btn.btn-primary:hover {
+background-color: grey !important;
+transition: all 0,4s ease;
+font-weight: 600;
+}
+.btn.btn-outline-secondary{
+ background-color: lightgrey !important;
+  color: black;
+  transition: all 0.7s ease;
+}
+.btn.btn-outline-secondary:hover {
+background-color: grey !important;
+transition: all 0,4s ease;
+font-weight: 600;
+}

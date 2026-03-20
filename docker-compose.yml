@@ -1,0 +1,12 @@
+services:
+  database:
+    image: postgres:15-alpine
+    container_name: thesis404-db
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data/thesis404:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=thesis404
+      - POSTGRES_USER=thesisuser
+      - POSTGRES_PASSWORD=thesis404pass

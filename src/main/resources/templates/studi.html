@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Student – Game of Advisor</title>
+  <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
+  <link rel="stylesheet" th:href="@{/css/404.css}">
+  <link rel="stylesheet" th:href="@{/css/studi.css}">
+</head>
+<body class="bg-light">
+
+<header>
+  <div class="topnav">
+    <a class="logo">Game of Advisor</a>
+    <a th:href="@{/homestudi}">Home</a>
+    <a th:href="@{/homestudi/themen}" class="split">Zu allen Themen</a>
+  </div>
+</header>
+
+<div class="container studi-container mt-4 mb-4">
+  <div th:if="${error}" class="alert alert-warning alert-dismissible fade show" role="alert">
+    <span th:text="${error}">Fehler</span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+  <div th:if="${info}" class="alert alert-info alert-dismissible fade show" role="alert">
+    <span th:text="${info}">Info</span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+  <h1 class="mb-4">Themenauswahl &amp; Betreuung</h1>
+
+  <div class="studi-layout">
+    <div class="studi-main studi-left">
+      <p class="studi-section-label">Filter / Eingabe</p>
+      <div class="studi-main-inner">
+      
+      <div class="studi-card">
+        <form id="studiForm" th:action="@{/homestudi}" method="get">
+          <div class="studi-dropdown-group">
+            
+            <div class="studi-dropdown" data-name="attended">
+              <button type="button" class="studi-dropdown-trigger" aria-expanded="false" aria-haspopup="listbox">
+                <span class="studi-dropdown-label">Veranstaltungen wählen</span>
+                <span class="studi-dropdown-count" data-count="attended">
+                  <span th:text="${selectedAttended != null ? #sets.size(selectedAttended) : 0}">0</span> ausgewählt
+                </span>
+              </button>
+              <div class="studi-dropdown-panel" role="listbox" hidden>
+                <div class="studi-dropdown-table">
+                  <div class="studi-dropdown-row" th:each="v : ${veranstaltungenOptions}">
+                    <label class="studi-dropdown-cell">
+                      <input type="checkbox" name="attended" th:value="${v}"
+                             th:checked="${selectedAttended != null and selectedAttended.contains(v)}"
+                             class="studi-dropdown-checkbox">
+                      <span class="studi-dropdown-text" th:text="${v}">Veranstaltung</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div class="studi-selected-chips mt-2" data-name="attended">
+                <span th:each="v : ${selectedAttended}" class="studi-chip" th:text="${v}">Veranstaltung</span>
+                <span class="studi-chip-empty" data-empty>Keine ausgewählt</span>
+              </div>
+            </div>
+
+            
+            <div class="studi-dropdown" data-name="interesse">
+              <button type="button" class="studi-dropdown-trigger" aria-expanded="false" aria-haspopup="listbox">
+                <span class="studi-dropdown-label">Interessensgebiete wählen</span>
+                <span class="studi-dropdown-count" data-count="interesse">
+                  <span th:text="${selectedInteressen != null ? #sets.size(selectedInteressen) : 0}">0</span> ausgewählt
+                </span>
+              </button>
+              <div class="studi-dropdown-panel" role="listbox" hidden>
+                <div class="studi-dropdown-table">
+                  <div class="studi-dropdown-row" th:each="i : ${interessenOptions}">
+                    <label class="studi-dropdown-cell">
+                      <input type="checkbox" name="interesse" th:value="${i}"
+                             th:checked="${selectedInteressen != null and selectedInteressen.contains(i)}"
+                             class="studi-dropdown-checkbox">
+                      <span class="studi-dropdown-text" th:text="${i}">Interesse</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div class="studi-selected-chips mt-2" data-name="interesse">
+                <span th:each="i : ${selectedInteressen}" class="studi-chip" th:text="${i}">Interesse</span>
+                <span class="studi-chip-empty" data-empty>Keine ausgewählt</span>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary mt-3">Matching anzeigen</button>
+        </form>
+      </div>
+
+      
+      <div class="studi-card" th:if="${matchingThemen != null and !#lists.isEmpty(matchingThemen)}">
+        <h3>Passende Themen</h3>
+        <p class="text-muted small">Sortiert nach Übereinstimmung</p>
+        <ul class="list-group list-group-flush">
+          <li th:each="st : ${matchingThemen}" class="list-group-item d-flex justify-content-between align-items-start flex-wrap gap-2">
+            <div class="flex-grow-1">
+              <span class="fw-semibold" th:text="${st.theme.titel}">Thema</span>
+              <small class="d-block text-muted" th:text="|Betreuer: ${st.betreuerName}|">Betreuer</small>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge bg-primary rounded-pill" th:text="|${st.score} Treffer|">0</span>
+              <th:block th:if="${isLoggedIn}">
+                <form th:if="${requestedThemeIds != null and !requestedThemeIds.contains(st.theme.id.value.toString())}"
+                      th:action="@{/homestudi/request/{tid}(tid=${st.theme.id.value})}" method="post" class="d-inline">
+                  <button type="submit" class="btn btn-sm btn-outline-primary">Thema anfragen</button>
+                </form>
+                <span th:if="${requestedThemeIds != null and requestedThemeIds.contains(st.theme.id.value.toString())}"
+                      class="badge bg-secondary">Anfrage gesendet</span>
+              </th:block>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="studi-card" th:if="${matchingThemen != null and #lists.isEmpty(matchingThemen) and ((selectedAttended != null and !#sets.isEmpty(selectedAttended)) or (selectedInteressen != null and !#sets.isEmpty(selectedInteressen)))}">
+        <h3>Passende Themen</h3>
+        <p class="text-muted mb-0">Keine passenden Themen gefunden.</p>
+      </div>
+
+      <div class="studi-card" th:if="${(selectedAttended == null or #sets.isEmpty(selectedAttended)) and (selectedInteressen == null or #sets.isEmpty(selectedInteressen))}">
+        <p class="text-muted mb-0">
+          Bitte <strong>Besuchte Veranstaltungen</strong> und/oder <strong>Interessensgebiete</strong> auswählen und auf „Matching anzeigen“ klicken.
+        </p>
+      </div>
+      </div>
+    </div>
+
+    
+    <div class="studi-main studi-right">
+      <p class="studi-section-label">Ergebnis</p>
+      <div class="studi-main-inner studi-result-box">
+
+        
+        <div class="studi-result-hint" th:if="${(selectedAttended == null or #sets.isEmpty(selectedAttended)) and (selectedInteressen == null or #sets.isEmpty(selectedInteressen))}">
+          <p class="mb-0">Wähle links Veranstaltungen und/oder Interessen und klicke auf „Matching anzeigen“.</p>
+        </div>
+
+        
+        <div th:if="${matchingBetreuer != null and !#lists.isEmpty(matchingBetreuer)}">
+          <h4 class="studi-result-title mb-3">Passende Betreuende</h4>
+          <div class="studi-result-cards">
+            <form th:each="sb : ${matchingBetreuer}" th:action="@{/homestudi}" method="get" class="studi-result-card">
+              <th:block th:each="a : ${selectedAttended}">
+                <input type="hidden" name="attended" th:value="${a}">
+              </th:block>
+              <th:block th:each="i : ${selectedInteressen}">
+                <input type="hidden" name="interesse" th:value="${i}">
+              </th:block>
+              <input type="hidden" name="selectedId" th:value="${sb.betreuer.id.value()}">
+              <button type="submit" class="studi-result-card-btn">
+                <div class="studi-result-card-name" th:text="${sb.betreuer.fullName}">Name</div>
+                <div class="studi-result-card-tags" th:if="${sb.betreuer.fachgebiete != null and !#lists.isEmpty(sb.betreuer.fachgebiete)}">
+                  <span th:each="fg : ${sb.betreuer.fachgebiete}" class="studi-result-chip" th:text="${fg.fachgebiet()}">Tag</span>
+                </div>
+                <div class="studi-result-card-themes text-muted small" th:with="tcount=${betreuerThemeCounts != null ? betreuerThemeCounts[sb.betreuer.id.value()] : null}, tsamples=${betreuerThemeSamples != null ? betreuerThemeSamples[sb.betreuer.id.value()] : null}">
+                  <span th:if="${tcount != null}" th:text="${tcount}">0</span> Thema/Themen
+                  <span th:if="${tsamples != null and !#lists.isEmpty(tsamples)}"
+                        th:text="| (z. B. ${#lists.toString(tsamples, ', ')})|">(Beispiele)</span>
+                </div>
+                <div class="studi-result-card-score">
+                  <span class="badge bg-primary" th:text="|${sb.score} Treffer|">0</span>
+                </div>
+              </button>
+            </form>
+          </div>
+        </div>
+
+        
+        <div class="studi-result-empty" th:if="${matchingBetreuer != null and #lists.isEmpty(matchingBetreuer) and ((selectedAttended != null and !#sets.isEmpty(selectedAttended)) or (selectedInteressen != null and !#sets.isEmpty(selectedInteressen)))}">
+          <p class="mb-0">Keine passenden Betreuenden gefunden. Bitte Auswahl erweitern.</p>
+        </div>
+
+        
+        <div class="studi-betreuer-detail mt-4" th:if="${selectedBetreuer != null}">
+          <h4 class="studi-live-label">Betreuer:innen-Details</h4>
+          <div class="studi-detail-section">
+            <h4 class="studi-detail-label">Name</h4>
+            <p class="studi-detail-value mb-0" th:text="${selectedBetreuer.fullName}">Betreuer Name</p>
+          </div>
+          <div class="studi-detail-section">
+            <h4 class="studi-detail-label">Betreuungsstil</h4>
+            <div class="studi-tags" th:if="${selectedBetreuer.fachgebiete != null and !#lists.isEmpty(selectedBetreuer.fachgebiete)}">
+              <span th:each="fg : ${selectedBetreuer.fachgebiete}"
+                    class="badge bg-info text-dark"
+                    th:text="${fg.fachgebiet()}">Tag</span>
+            </div>
+            <p th:if="${selectedBetreuer.fachgebiete == null or #lists.isEmpty(selectedBetreuer.fachgebiete)}"
+               class="text-muted small mb-0">—</p>
+          </div>
+          <div class="studi-detail-section">
+            <h4 class="studi-detail-label">belegte Module</h4>
+            <div class="studi-modules-list" th:if="${betreuerModules != null and !#sets.isEmpty(betreuerModules)}">
+              <span th:each="mod : ${betreuerModules}" th:text="${mod}">Modul</span>
+            </div>
+            <p th:if="${betreuerModules == null or #sets.isEmpty(betreuerModules)}"
+               class="text-muted small mb-0">—</p>
+          </div>
+          <div class="studi-detail-section">
+            <h4 class="studi-detail-label">Themenfindung</h4>
+            <ul class="studi-themes-list" th:if="${betreuerThemes != null and !#lists.isEmpty(betreuerThemes)}">
+              <li th:each="t : ${betreuerThemes}">
+                <span th:text="${t.titel}">Thema</span>
+              </li>
+            </ul>
+            <p th:if="${betreuerThemes == null or #lists.isEmpty(betreuerThemes)}"
+               class="text-muted small mb-0">—</p>
+          </div>
+          <div class="studi-detail-section">
+            <h4 class="studi-detail-label">Exposé</h4>
+            <p class="text-muted small mb-0">—</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script th:src="@{/js/bootstrap.bundle.js}"></script>
+<script>
+(function () {
+  'use strict';
+
+  function updateCount(dropdown) {
+    var name = dropdown.getAttribute('data-name');
+    var checked = dropdown.querySelectorAll('input[type="checkbox"]:checked');
+    var span = dropdown.querySelector('.studi-dropdown-count span');
+    if (span) span.textContent = checked.length;
+  }
+
+  function closeAll() {
+    document.querySelectorAll('.studi-dropdown-panel:not([hidden])').forEach(function (p) {
+      p.setAttribute('hidden', '');
+      var t = p.closest('.studi-dropdown')?.querySelector('.studi-dropdown-trigger');
+      if (t) t.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+  document.querySelectorAll('.studi-dropdown').forEach(function (dd) {
+    var trigger = dd.querySelector('.studi-dropdown-trigger');
+    var panel = dd.querySelector('.studi-dropdown-panel');
+    if (!trigger || !panel) return;
+
+    trigger.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var isOpen = !panel.hasAttribute('hidden');
+      closeAll();
+      if (!isOpen) {
+        panel.removeAttribute('hidden');
+        trigger.setAttribute('aria-expanded', 'true');
+      }
+    });
+
+    panel.addEventListener('click', function (e) {
+      e.stopPropagation();
+    });
+
+    dd.querySelectorAll('.studi-dropdown-checkbox').forEach(function (cb) {
+      cb.addEventListener('change', function () {
+        updateCount(dd);
+        updateChips(dd);
+      });
+    });
+
+    updateCount(dd);
+    updateChips(dd);
+  });
+
+  function updateChips(dropdown) {
+    var container = dropdown.querySelector('.studi-selected-chips');
+    if (!container) return;
+    var checked = dropdown.querySelectorAll('input[type="checkbox"]:checked');
+    var emptySpan = container.querySelector('.studi-chip-empty[data-empty]');
+    container.querySelectorAll('.studi-chip').forEach(function (c) { c.remove(); });
+    checked.forEach(function (cb) {
+      var chip = document.createElement('span');
+      chip.className = 'studi-chip';
+      chip.textContent = cb.value;
+      container.insertBefore(chip, emptySpan || null);
+    });
+    if (emptySpan) emptySpan.style.display = checked.length === 0 ? 'inline' : 'none';
+  }
+
+  document.addEventListener('click', closeAll);
+
+  updateCount(document.querySelector('.studi-dropdown[data-name="attended"]'));
+  updateCount(document.querySelector('.studi-dropdown[data-name="interesse"]'));
+})();
+</script>
+</body>
+</html>

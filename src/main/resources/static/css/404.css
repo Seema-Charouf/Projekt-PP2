@@ -1,0 +1,55 @@
+
+.topnav {
+  background-color: black;
+  overflow: hidden;
+}
+
+
+.topnav a {
+  float: left;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 14px;
+  text-decoration: none;
+  font-size: 17px;
+  text-transform: uppercase;
+  font-weight: bolder;
+}
+
+
+
+.topnav a:hover {
+  text-shadow: black;
+  color: crimson;
+  text-decoration: underline;
+  text-underline: ghostwhite;
+}
+
+
+.topnav a.active {
+  text-underline-color: black;
+  text-overline-color: black;
+  text-decoration: underline overline;
+}
+
+
+.topnav a.split {
+  float: right;
+  color: white;
+
+}
+
+
+
+.topnav a.logo {
+
+  color: white;
+  text-align: center;
+  text-shadow: darkgray;
+}
+
+
+.profile{
+  color: white;
+  text-align: center;
+}

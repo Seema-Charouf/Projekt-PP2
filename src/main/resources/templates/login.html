@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login • Game of Advisor</title>
+  <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
+  <link rel="stylesheet" th:href="@{/css/login.css}">
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+<nav class="bg-primary custom-header text-white py-3 mb-4">
+  <h1 class="text-center m-0">Game of Advisor</h1>
+</nav>
+
+<main class="container">
+  <div class="row justify-content-center">
+    <div class="col-11 col-sm-8 col-md-6 col-lg-4 text-center">
+      <img th:src="@{/images/hhu logo.jpg}" alt="HHU Logo"
+           class="img-fluid mx-auto d-block mb-4" width="180">
+
+      <h1 class="h4 mb-4">Login</h1>
+
+      <a th:href="@{/oauth2/authorization/github}" class="btn btn-primary btn-lg">
+        Login mit GitHub
+      </a>
+    </div>
+  </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,25 @@
+logging:
+  level:
+    org:
+      springframework:
+        security: info
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/thesis404
+    username: thesisuser
+    password: thesis404pass
+
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: ${CLIENT_ID:__MISSING_CLIENT_ID__}
+            client-secret: ${CLIENT_SECRET:__MISSING_CLIENT_SECRET__}
+            scope: read:user
+
+app:
+  security:
+    admin-ids: ${ADMIN_IDS:}
+    test-user-enabled: ${TEST_USER_ENABLED:false}

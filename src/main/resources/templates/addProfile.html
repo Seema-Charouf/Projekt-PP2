@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Profil</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
+    <link rel="stylesheet"  th:href="@{/css/add-profile.css}">
+</head>
+
+<body class="bg-light">
+
+<nav class="bg-primary text-black py-3 mb-4">
+    <h1 class="text-center m-0">Game of Advisor Admin</h1>
+</nav>
+
+<div class="container mt-4 mx-auto">
+    <h2 class="text-center mb-3">Profil hinzufügen</h2>
+
+    <form th:action="@{/addProfile}" th:object="${profileForm}"
+          method="post" enctype="multipart/form-data"
+          class="bg-white p-4 border rounded">
+
+        
+        <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <input id="name" type="text" class="form-control"
+                   th:field="*{name}" placeholder="Name des Betreuers" required>
+            <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+        </div>
+
+        
+        <div class="mb-3">
+            <label for="fach" class="form-label">Fachgebiet</label>
+            <input id="fach" type="text" class="form-control"
+                   th:field="*{fachgebiete}">
+        </div>
+
+        
+        <div class="mb-3">
+            <label class="form-label">Datei hochladen</label>
+            <input type="file" class="form-control" th:field="*{files}">
+        </div>
+
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+
+    </form>
+</div>
+
+<script th:src="@{/js/bootstrap.bundle.js}"></script>
+</body>
+</html>

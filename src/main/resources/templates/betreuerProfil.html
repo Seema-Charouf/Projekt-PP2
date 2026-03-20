@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="description" content="Game of Advisors - Betreuer Home Page">
+  <meta name="author" content="Kemal Sener">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Home - Betreuer</title>
+  <link rel="stylesheet" href="/css/bootstrap.css" th:href="@{/css/bootstrap.css}">
+  <link rel="stylesheet" href="/css/404.css" th:href="@{/css/404.css}">
+  <script th:src="@{/js/bootstrap.bundle.js}" src="../static/js/bootstrap.bundle.js"></script>
+</head>
+<body>
+<header>
+  <div class="topnav">
+    <a class="logo">Game of Advisors</a>
+    <a class="active split" th:href="@{/betreuerProfil}">Home</a>
+  </div>
+</header>
+
+<h1>Betreuer Home Page</h1>
+
+<div class="container my-4">
+
+  
+  <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+    <span th:text="${success}">Erfolgsmeldung</span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <span th:text="${error}">Fehlermeldung</span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <div th:if="${info}" class="alert alert-info alert-dismissible fade show" role="alert">
+    <span th:text="${info}">Info</span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+
+  
+  <section class="mb-5">
+    <table class="table table-hover table-bordered align-middle text-center">
+      <caption class="caption-top fw-bold">Studentenanfragen</caption>
+      <thead class="table-warning">
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Thema</th>
+          <th scope="col">Student</th>
+          <th scope="col">Aktion</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="request, iterStat : ${requests}">
+          <th scope="row" th:text="${iterStat.count}">1</th>
+          <td th:text="${request.themeTitle()}">Theme Name</td>
+          <td th:text="${request.studentDisplayName()}">Student Name</td>
+          <td>
+            <a th:unless="${request.accepted()}"
+               th:href="@{/betreuerProfil/acceptTheme/{id}(id=${request.id()})}"
+               class="btn btn-success btn-sm">Accept</a>
+            <a th:href="@{/betreuerProfil/declineTheme/{id}(id=${request.id()})}"
+               class="btn btn-danger btn-sm">Decline</a>
+          </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(requests)}">
+          <td colspan="4" class="text-muted">Keine Anfragen vorhanden</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  
+  <section class="mb-5">
+    <h2>Profil</h2>
+    <h4 th:text="${myBetreuerProfile.fullName}">Prof. Dr. Max Mustermann</h4>
+    <a th:href="@{/betreuerProfil/editProfile}" class="btn btn-outline-primary mb-3">Profil bearbeiten</a>
+    <dl class="row">
+      <dt class="col-sm-3">Tel:</dt>
+      <dd class="col-sm-9" th:text="${myBetreuerProfile.phoneNumber != null ? myBetreuerProfile.phoneNumber.phoneNumber() : 'N/A'}">+4912345678901</dd>
+
+      <dt class="col-sm-3">Email:</dt>
+      <dd class="col-sm-9" th:text="${myBetreuerProfile.mail != null ? myBetreuerProfile.mail.email() : 'N/A'}">example@email.com</dd>
+
+      <dt class="col-sm-3">Raum:</dt>
+      <dd class="col-sm-9" th:text="${myBetreuerProfile.raum != null ? myBetreuerProfile.raum.toCode() : 'N/A'}">25.12.02.03</dd>
+    </dl>
+  </section>
+
+  
+  <section class="mb-5">
+    <h2>Themen</h2>
+    <a th:href="@{/betreuerProfil/themes/new}" class="btn btn-primary mb-3">Neues Thema hinzufügen</a>
+
+    <ul class="list-group" th:if="${themes != null and !#lists.isEmpty(themes)}">
+      <li th:each="theme : ${themes}" class="list-group-item d-flex justify-content-between align-items-center">
+        <a th:href="@{/betreuerProfil/theme/{id}(id=${theme.id})}"
+           th:text="${theme.titel}"
+           class="text-decoration-none text-primary fw-semibold flex-grow-1">Name von Themen</a>
+        <div class="btn-group" role="group">
+          <a th:href="@{/betreuerProfil/editTheme/{id}(id=${theme.id})}"
+             class="btn btn-outline-secondary btn-sm">Bearbeiten</a>
+          <a th:href="@{/betreuerProfil/deleteTheme/{id}(id=${theme.id})}"
+             class="btn btn-outline-danger btn-sm"
+             onclick="return confirm('Sind Sie sicher, dass Sie dieses Thema löschen möchten?')">Löschen</a>
+        </div>
+      </li>
+    </ul>
+    <div th:if="${themes == null or #lists.isEmpty(themes)}" class="alert alert-info">
+      Keine Themen vorhanden
+    </div>
+  </section>
+
+  
+  <section class="mb-5">
+    <h2>Fachgebiete</h2>
+
+    
+    <div th:if="${allFachgebiete != null and !#lists.isEmpty(allFachgebiete)}" class="mb-3">
+      <form th:action="@{/betreuerProfil/addFachgebiet}" th:object="${fachgebietForm}" method="post" class="d-flex align-items-center gap-2">
+        <label for="fachgebietSelect" class="form-label fw-bold mb-0">Neues Fachgebiet wählen:</label>
+        <select id="fachgebietSelect" th:field="*{selectedFachgebiet}" class="form-select" style="max-width: 300px;">
+          <option value="">-- Bitte wählen --</option>
+          <option th:each="fg : ${allFachgebiete}" th:value="${fg}" th:text="${fg}">Fachgebiet</option>
+        </select>
+        <button type="submit" class="btn btn-primary">Hinzufügen</button>
+      </form>
+    </div>
+
+    
+    <ul class="list-group" th:if="${myBetreuerProfile.fachgebiete != null and !#lists.isEmpty(myBetreuerProfile.fachgebiete)}">
+      <li th:each="fachgebiet : ${myBetreuerProfile.fachgebiete}" class="list-group-item d-flex justify-content-between align-items-center">
+        <span th:text="${fachgebiet.fachgebiet()}">Fachgebiet</span>
+        <a th:href="@{/betreuerProfil/deleteFachgebiet(fachgebietToDelete=${fachgebiet.key()})}"
+           class="btn btn-outline-danger btn-sm"
+           onclick="return confirm('Sind Sie sicher, dass Sie dieses Fachgebiet löschen möchten?')">Löschen</a>
+      </li>
+    </ul>
+    <div th:if="${myBetreuerProfile.fachgebiete == null or #lists.isEmpty(myBetreuerProfile.fachgebiete)}" class="alert alert-info">
+      Keine Fachgebiete vorhanden
+    </div>
+  </section>
+
+  
+  <section class="mb-5">
+    <h2>Dokument hochladen</h2>
+    <form th:action="@{/betreuerProfil/uploadDocument}" th:object="${documentForm}" method="post" enctype="multipart/form-data" class="mb-4">
+      <div class="mb-3">
+        <label class="form-label" for="docTitle">Titel *</label>
+        <input class="form-control" type="text" id="docTitle" th:field="*{title}" placeholder="Name der Datei" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="docDescription">Beschreibung</label>
+        <input class="form-control" type="text" id="docDescription" th:field="*{description}" placeholder="Kurze Beschreibung des Inhalts (optional)">
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="docFile">Datei * (PDF, ZIP oder MD, max. 10 MB)</label>
+        <input class="form-control" type="file" id="docFile" th:field="*{file}" accept=".pdf,.zip,.md" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Hochladen</button>
+    </form>
+  </section>
+
+  
+  <section class="mb-5">
+    <h2>Verfügbare Dokumente</h2>
+    <div th:if="${documents != null and !#lists.isEmpty(documents)}">
+      <div class="list-group">
+        <div th:each="doc : ${documents}" class="list-group-item">
+          <div class="d-flex w-100 justify-content-between align-items-start">
+            <div class="flex-grow-1">
+              <h5 class="mb-1">
+                <a th:href="@{/betreuerProfil/documents/{id}(id=${doc.id()})}"
+                   th:text="${doc.title()}"
+                   class="text-decoration-none">Dokument Titel</a>
+              </h5>
+              <p th:if="${doc.description() != null}" th:text="${doc.description()}" class="mb-1 text-muted">Beschreibung</p>
+              <small class="text-muted">
+                Hochgeladen von: <span th:text="${doc.uploaderId()}">Uploader</span> |
+                Datum: <span th:text="${#temporals.format(doc.uploadedAt(), 'dd.MM.yyyy HH:mm')}">01.01.2024</span> |
+                Typ: <span th:text="${doc.type()}">PDF</span>
+              </small>
+            </div>
+            <a th:href="@{/betreuerProfil/deleteDocument/{id}(id=${doc.id()})}"
+               class="btn btn-outline-danger btn-sm"
+               onclick="return confirm('Sind Sie sicher, dass Sie dieses Dokument löschen möchten?')">Löschen</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div th:if="${documents == null or #lists.isEmpty(documents)}" class="alert alert-info">
+      Keine Dokumente vorhanden
+    </div>
+  </section>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+</body>
+</html>

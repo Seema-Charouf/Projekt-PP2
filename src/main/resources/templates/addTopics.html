@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Themen hinzufügen</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.css}" href="../static/css/bootstrap.css">
+    <link rel="stylesheet" th:href="@{/css/404.css}" href="../static/css/404.css">
+</head>
+
+<body class="bg-light">
+<header>
+    <div class="topnav">
+        <a class="logo">Game of Advisors</a>
+        <a th:href="@{/betreuerProfil}">Home</a>
+    </div>
+</header>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Neues Thema hinzufügen</h4>
+                </div>
+                <div class="card-body">
+                    <div th:replace="~{fragments/theme-form :: themeForm(
+                        title='Neues Thema hinzufügen',
+                        actionUrl=@{/betreuerProfil/themes},
+                        submitLabel='Hinzufügen',
+                        editMode=false,
+                        themeId=null
+                    )}"></div>
+
+                    <hr class="my-4">
+
+                    
+                    <section class="mb-4">
+                        <h5 class="mb-3">Angeforderte Veranstaltungen</h5>
+
+                        
+                        <div th:if="${allVeranstaltungen != null and !#lists.isEmpty(allVeranstaltungen)}" class="mb-3">
+                            <form th:action="@{/betreuerProfil/themes/new/addVeranstaltung}" 
+                                  th:object="${requiredModuleForm}" 
+                                  method="post" 
+                                  class="d-flex align-items-center gap-2">
+                                <label for="veranstaltungSelect" class="form-label fw-bold mb-0">Neue Veranstaltung wählen:</label>
+                                <select id="veranstaltungSelect" th:field="*{selectedFachgebiet}" class="form-select" style="max-width: 300px;">
+                                    <option value="">-- Bitte wählen --</option>
+                                    <option th:each="v : ${allVeranstaltungen}" th:value="${v.name()}" th:text="${v.name()}">Veranstaltung</option>
+                                </select>
+                                <button type="submit" class="btn btn-primary">Hinzufügen</button>
+                            </form>
+                        </div>
+
+                        
+                        <ul class="list-group" th:if="${themeForm != null and themeForm.requiredModules != null and !#lists.isEmpty(themeForm.requiredModules)}">
+                            <li th:each="veranstaltung : ${themeForm.requiredModules}" class="list-group-item d-flex justify-content-between align-items-center">
+                                <span th:text="${veranstaltung}">Veranstaltung</span>
+                                <a th:href="@{/betreuerProfil/themes/new/deleteVeranstaltung(veranstaltungToDelete=${veranstaltung})}"
+                                   class="btn btn-outline-danger btn-sm"
+                                   onclick="return confirm('Sind Sie sicher, dass Sie diese Veranstaltung entfernen möchten?')">Löschen</a>
+                            </li>
+                        </ul>
+                        <div th:if="${themeForm == null or themeForm.requiredModules == null or #lists.isEmpty(themeForm.requiredModules)}" class="alert alert-info">
+                            Keine Veranstaltungen vorhanden
+                        </div>
+                    </section>
+
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <a th:href="@{/betreuerProfil}" class="btn btn-outline-secondary">Abbrechen</a>
+                        <button type="submit" form="themeForm" class="btn btn-primary">Hinzufügen</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/bootstrap.bundle.js}"></script>
+</body>
+</html>

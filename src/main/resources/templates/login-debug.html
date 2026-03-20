@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Debug • Game of Advisor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
+</head>
+<body class="bg-light">
+
+<nav class="bg-primary text-white py-3 mb-4">
+    <h1 class="text-center m-0">Game of Advisor</h1>
+</nav>
+
+<div class="container">
+    <div class="card shadow-sm">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">Login-Debug</h5>
+        </div>
+        <div class="card-body">
+            <p class="mb-2"><strong>Benutzer (Anzeige):</strong> <span th:text="${userName}">-</span></p>
+            <p class="mb-2" th:if="${githubId != null}"><strong>GitHub-ID (numerisch):</strong> <span th:text="${githubId}">-</span></p>
+            <p class="mb-2"><strong>Rollen (Authorities):</strong></p>
+            <ul class="list-group mb-3" th:if="${!roles.isEmpty()}">
+                <li class="list-group-item" th:each="role : ${roles}" th:text="${role}">ROLE_XXX</li>
+            </ul>
+            <p th:if="${roles.isEmpty()}" class="text-muted">Keine Rollen gefunden.</p>
+
+            <hr>
+
+            <p class="mb-1"><strong>Zugeordnete Rolle:</strong></p>
+            <div class="alert alert-success mb-0" th:if="${#lists.contains(roles, 'ROLE_ADMIN')}" role="alert">
+                Admin
+            </div>
+            <div class="alert alert-info mb-0" th:if="${!#lists.contains(roles, 'ROLE_ADMIN') and #lists.contains(roles, 'ROLE_BETREUER')}" role="alert">
+                Betreuer
+            </div>
+            <div class="alert alert-secondary mb-0" th:if="${!#lists.contains(roles, 'ROLE_ADMIN') and !#lists.contains(roles, 'ROLE_BETREUER')}" role="alert">
+                Student / User
+            </div>
+        </div>
+        <div class="card-footer">
+            <a th:href="@{/}" class="btn btn-outline-primary">Zurück zur Startseite</a>
+            <a th:href="@{/admin}" class="btn btn-outline-secondary ms-2" th:if="${#lists.contains(roles, 'ROLE_ADMIN')}">Admin-Bereich</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

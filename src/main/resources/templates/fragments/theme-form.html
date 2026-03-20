@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<body>
+  
+  <div th:fragment="themeForm(title, actionUrl, submitLabel, editMode, themeId)">
+    <form id="themeForm" th:action="${actionUrl}" th:object="${themeForm}" method="post">
+      
+      
+      <input th:if="${editMode != null && editMode}" type="hidden" th:name="themeId" th:value="${themeId}"/>
+
+      <div class="mb-3">
+        <label for="titel" class="form-label">Titel *</label>
+        <input id="titel" type="text" class="form-control"
+               th:field="*{titel}"
+               th:classappend="${#fields.hasErrors('titel')} ? 'is-invalid' : ''"
+               placeholder="Titel des Themas" required>
+        <div th:if="${#fields.hasErrors('titel')}" th:errors="*{titel}" class="invalid-feedback"></div>
+      </div>
+
+      <div class="mb-3">
+        <label for="desc" class="form-label">Beschreibung</label>
+        <textarea id="desc" rows="4" class="form-control" 
+                  th:field="*{beschreibungMarkdown}" 
+                  placeholder="Kurze Beschreibung (Markdown unterstützt)"></textarea>
+      </div>
+
+      
+      <div class="mb-4">
+        <label class="form-label fw-bold">Fachgebiete</label>
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <select id="fachgebiete" class="form-select" multiple th:field="*{fachgebiete}" style="height: 120px;">
+            <option th:each="fg : ${allFachgebiete}" th:value="${fg}" th:text="${fg}">Fachgebiet</option>
+          </select>
+        </div>
+        <small class="form-text text-muted">Mehrfachauswahl möglich (Strg/Cmd gedrückt halten)</small>
+      </div>
+
+      <div class="mb-3">
+        <label for="file" class="form-label">Datei hochladen</label>
+        <input id="file" type="file" class="form-control">
+        <small class="form-text text-muted">Optional: PDF, ZIP oder MD Dateien</small>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

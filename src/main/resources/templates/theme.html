@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="'Thema: ' + ${theme.titel}">Thema Details</title>
+  <link rel="stylesheet" th:href="@{/css/bootstrap.css}" href="../static/css/bootstrap.css">
+  <link rel="stylesheet" th:href="@{/css/404.css}" href="../static/css/404.css">
+</head>
+<body class="bg-light">
+
+<header>
+  <div class="topnav">
+    <a class="logo">Game of Advisors</a>
+    <a th:href="@{/betreuerProfil}">Home</a>
+  </div>
+</header>
+
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-10">
+
+      
+      <div class="card shadow mb-4">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+          <h3 class="mb-0" th:text="${theme.titel}">Thema Titel</h3>
+          <div>
+            <a th:href="@{/betreuerProfil/editTheme/{id}(id=${theme.id})}" class="btn btn-light btn-sm">Bearbeiten</a>
+          </div>
+        </div>
+        <div class="card-body">
+
+          
+          <section class="mb-4">
+            <h5>Beschreibung</h5>
+            <div th:if="${theme.beschreibung != null}" class="border rounded p-3 bg-white">
+              
+              <div th:if="${beschreibungHtml != null}" th:utext="${beschreibungHtml}">
+                Beschreibung wird hier angezeigt...
+              </div>
+              <div th:if="${beschreibungHtml == null}" th:text="${theme.beschreibung.markdown()}">
+                Markdown-Text
+              </div>
+            </div>
+            <div th:if="${theme.beschreibung == null}" class="text-muted">
+              Keine Beschreibung vorhanden
+            </div>
+          </section>
+
+          
+          <section class="mb-4">
+            <h5>Fachgebiete</h5>
+            <div th:if="${theme.fachgebiete != null and !#lists.isEmpty(theme.fachgebiete)}">
+              <span th:each="fg : ${theme.fachgebiete}"
+                    th:text="${fg.fachgebiet()}"
+                    class="badge bg-info text-dark me-1 mb-1">Fachgebiet</span>
+            </div>
+            <div th:if="${theme.fachgebiete == null or #lists.isEmpty(theme.fachgebiete)}" class="text-muted">
+              Keine Fachgebiete zugeordnet
+            </div>
+          </section>
+
+          
+          <section class="mb-4">
+            <h5>Angeforderte Veranstaltungen</h5>
+            <div th:if="${theme.angeforderteVeranstaltungen != null and !#lists.isEmpty(theme.angeforderteVeranstaltungen)}">
+              <ul class="list-group">
+                <li th:each="veranstaltung : ${theme.angeforderteVeranstaltungen}"
+                    th:text="${veranstaltung}"
+                    class="list-group-item">Veranstaltung</li>
+              </ul>
+            </div>
+            <div th:if="${theme.angeforderteVeranstaltungen == null or #lists.isEmpty(theme.angeforderteVeranstaltungen)}" class="text-muted">
+              Keine Veranstaltungen angefordert
+            </div>
+          </section>
+
+          
+          <section class="mb-4">
+            <h5>Links</h5>
+            <div th:if="${theme.links != null and !#lists.isEmpty(theme.links)}">
+              <ul class="list-group">
+                <li th:each="link : ${theme.links}" class="list-group-item">
+                  <a th:href="${link.url()}" th:text="${link.text()}" target="_blank">Link</a>
+                </li>
+              </ul>
+            </div>
+            <div th:if="${theme.links == null or #lists.isEmpty(theme.links)}" class="text-muted">
+              Keine Links vorhanden
+            </div>
+          </section>
+
+          
+          <section class="mb-4">
+            <h5>Dateien</h5>
+            <div th:if="${theme.files != null and !#lists.isEmpty(theme.files)}">
+              <ul class="list-group">
+                <li th:each="file : ${theme.files}" class="list-group-item d-flex justify-content-between align-items-center">
+                  <div>
+                    <strong th:text="${file.title()}">Datei Titel</strong>
+                    <small th:if="${file.description() != null}" th:text="' - ' + ${file.description()}" class="text-muted"></small>
+                  </div>
+                  <span class="badge bg-secondary" th:text="${file.type()}">PDF</span>
+                </li>
+              </ul>
+            </div>
+            <div th:if="${theme.files == null or #lists.isEmpty(theme.files)}" class="text-muted">
+              Keine Dateien angehängt
+            </div>
+          </section>
+
+        </div>
+      </div>
+
+      
+      <div class="text-center">
+        <a th:href="@{/betreuerProfil}" class="btn btn-outline-primary">Zurück zur Übersicht</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script th:src="@{/js/bootstrap.bundle.js}"></script>
+</body>
+</html>

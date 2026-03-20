@@ -1,0 +1,19 @@
+.add-profile{
+  max-width: 360px;
+  margin: 10vh auto;
+  gap: 12px;
+}
+.bg-primary {
+  background-color: lightblue !important;
+  color: black !important;
+  font-style: italic;
+  text-shadow: black 1px 1px 3px;
+}
+.btn.btn-primary:hover {
+  background-color: lightgreen !important;
+  color: black !important;
+  transition: all 0.8s ease;
+}
+button.btn.btn-primary {
+  transition: all 0.4s ease;
+}

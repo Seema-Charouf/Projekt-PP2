@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Privater Bereich – Game of Advisor</title>
+  <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
+  <link rel="stylesheet" th:href="@{/css/404.css}">
+</head>
+<body>
+<header>
+  <div class="topnav">
+    <a class="logo">Game of Advisor</a>
+    <a th:href="@{/homestudi}">Home</a>
+    <form th:action="@{/logout}" method="post" class="d-inline">
+      <button type="submit" class="btn btn-link p-0 border-0 align-baseline">Logout</button>
+    </form>
+  </div>
+</header>
+<div class="container mt-4">
+  <h1>Privater Bereich</h1>
+  <p>Du bist eingeloggt.</p>
+</div>
+</body>
+</html>
