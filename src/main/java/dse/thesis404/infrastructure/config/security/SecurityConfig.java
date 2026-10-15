@@ -2,6 +2,7 @@ package dse.thesis404.infrastructure.config.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -25,7 +26,9 @@ public class SecurityConfig {
         .authorizeHttpRequests(auth -> auth
             // Öffentlich
             .requestMatchers("/", "/login", "/public/**", "/css/**", "/js/**", "/images/**", "/favicon.ico", "/error").permitAll()
-            .requestMatchers("/homestudi", "/homestudi/**").permitAll()
+            // Studierenden-Bereich: nur Ansehen und Suchen ist öffentlich (Allowlist).
+            // Alles andere unter /homestudi (z. B. Thema anfragen) fällt unten auf authenticated().
+            .requestMatchers(HttpMethod.GET, "/homestudi", "/homestudi/themen").permitAll()
             // Nur Admins: Verwaltung von Profilen, Nutzern und Themen
             .requestMatchers("/admin", "/admin/**", "/homeadmin", "/addProfile", "/addusers", "/addTopics").hasRole("ADMIN")
             // Nur Betreuer (Rolle wird beim Login vergeben, wenn ein Betreuerprofil existiert)

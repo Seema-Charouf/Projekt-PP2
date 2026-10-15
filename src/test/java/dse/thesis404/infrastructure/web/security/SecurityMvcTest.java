@@ -223,7 +223,7 @@ class SecurityMvcTest {
 
         @Test
         void thema_anfragen_per_get_405() throws Exception {
-            mvc.perform(get("/homestudi/request/" + THEME_ID))
+            mvc.perform(get("/homestudi/request/" + THEME_ID).with(user("s").roles("USER")))
                     .andExpect(status().isMethodNotAllowed());
         }
 
@@ -231,6 +231,33 @@ class SecurityMvcTest {
         void deleteTheme_per_post_ohne_csrf_403() throws Exception {
             mvc.perform(post("/betreuerProfil/deleteTheme/" + THEME_ID).with(user("b").roles("BETREUER")))
                     .andExpect(status().isForbidden());
+        }
+    }
+
+    @Nested
+    @DisplayName("Studierenden-Bereich: nur Ansehen ist öffentlich")
+    class StudentArea {
+
+        private static final String THEME_ID = "a0000001-0000-4000-8000-000000000001";
+
+        @Test
+        void themen_ansehen_ohne_login_200() throws Exception {
+            mvc.perform(get("/homestudi/themen"))
+                    .andExpect(status().isOk());
+        }
+
+        @Test
+        void thema_anfragen_ohne_login_redirect_zum_login() throws Exception {
+            mvc.perform(post("/homestudi/request/" + THEME_ID).with(csrf()))
+                    .andExpect(status().is3xxRedirection())
+                    .andExpect(redirectedUrlPattern("**/login**"));
+        }
+
+        @Test
+        void unbekannte_homestudi_seite_ohne_login_redirect_zum_login() throws Exception {
+            mvc.perform(get("/homestudi/irgendwas"))
+                    .andExpect(status().is3xxRedirection())
+                    .andExpect(redirectedUrlPattern("**/login**"));
         }
     }
 }
