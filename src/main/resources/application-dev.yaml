@@ -1,4 +1,3 @@
-
-app:
-  security:
-    test-user-enabled: true
+# Einstellungen nur für die lokale Entwicklung (Profil "dev").
+# Hinweis: Den früheren Test-Login per ?testUser=... gibt es nicht mehr.
+# Zum Testen anderer Rollen: zweiter GitHub-Account oder die MockMvc-Tests.

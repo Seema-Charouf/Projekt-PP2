@@ -9,7 +9,6 @@ Für den Login werden Umgebungsvariablen benötigt:
 
 Optional (für Admin-Zugriff): `ADMIN_IDS=12345678,87654321` – GitHub-numerische IDs mit ROLE_ADMIN
 
-Optional (nur Dev): `TEST_USER_ENABLED=true` – ermöglicht `?testUser=1001` auf der Betreuer-Seite für lokale Tests
 
 **Betreuer-Zugriff:** Ein Nutzer kann die Betreuer-Seite nur nutzen, wenn ein Betreuerprofil mit seiner GitHub-ID in der DB existiert. Die numerische GitHub-ID steht nach dem Login auf `/login-debug`. Anleitung zum Anlegen: siehe `docs/BETREUER_VIA_GITHUB.md`.
 

@@ -3,10 +3,15 @@ services:
     image: postgres:15-alpine
     container_name: thesis404-db
     ports:
-      - "5432:5432"
+      - "5434:5432"
     volumes:
-      - ./data/thesis404:/var/lib/postgresql/data
+      # Docker-Volume statt Ordner auf /mnt/c: Postgres braucht Linux-Dateirechte,
+      # die es auf dem Windows-Laufwerk nicht setzen kann.
+      - thesis404_db_data:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=thesis404
       - POSTGRES_USER=thesisuser
       - POSTGRES_PASSWORD=thesis404pass
+
+volumes:
+  thesis404_db_data:

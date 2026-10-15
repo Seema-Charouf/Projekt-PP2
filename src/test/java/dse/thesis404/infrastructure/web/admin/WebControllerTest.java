@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @WebMvcTest(WebController.class)
-@WithMockUser
+@WithMockUser(roles = "ADMIN")
 @ActiveProfiles("test")
 @DisplayName("WebController – Admin")
 class WebControllerTest {

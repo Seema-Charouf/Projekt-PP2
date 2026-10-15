@@ -28,13 +28,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import jakarta.servlet.http.HttpServletRequest;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
@@ -45,9 +41,6 @@ import java.util.NoSuchElementException;
 @RequestMapping("/betreuerProfil")
 @org.springframework.web.bind.annotation.SessionAttributes("themeForm")
 public class BetreuerProfilController {
-
-    @Value("${app.security.test-user-enabled:false}")
-    private boolean testUserEnabled;
 
     private final BetreuerProfilService betreuerProfilService;
     private final ThemeService themeService;
@@ -91,20 +84,13 @@ public class BetreuerProfilController {
         this.dateiViewService = dateiViewService;
     }
 
+    /**
+     * Ermittelt das Betreuerprofil ausschließlich aus dem echten Login (GitHub-ID).
+     * Es gibt bewusst keinen Weg, die Identität per Request-Parameter zu überschreiben.
+     */
     private ProfileId currentProfileId(Principal principal) {
-        return currentProfileId(principal, getCurrentRequest());
-    }
-
-    private ProfileId currentProfileId(Principal principal, HttpServletRequest request) {
         if (principal == null) {
             throw new SecurityException("Nicht authentifiziert.");
-        }
-
-        if (testUserEnabled && request != null) {
-            String testUser = request.getParameter("testUser");
-            if (testUser != null && testUser.matches("100[1-5]")) {
-                return ProfileId.ofGithubUserId(Long.parseLong(testUser));
-            }
         }
 
         Long githubId = OAuth2PrincipalUtils.extractGitHubId(principal).orElse(null);
@@ -116,14 +102,6 @@ public class BetreuerProfilController {
                 .orElseThrow(() -> new SecurityException(
                         "Du bist kein Betreuer. Es existiert kein Betreuerprofil für deine GitHub-ID. " +
                         "Bitte wende dich an einen Administrator."));
-    }
-
-    private static HttpServletRequest getCurrentRequest() {
-        try {
-            return ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-        } catch (Exception e) {
-            return null;
-        }
     }
 
     private ThemeId toThemeId(String raw) {

@@ -4,7 +4,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration
 public class SecurityConfig {
@@ -24,8 +23,14 @@ public class SecurityConfig {
   public SecurityFilterChain configure(HttpSecurity http) throws Exception {
     http
         .authorizeHttpRequests(auth -> auth
+            // Öffentlich
             .requestMatchers("/", "/login", "/public/**", "/css/**", "/js/**", "/images/**", "/favicon.ico", "/error").permitAll()
             .requestMatchers("/homestudi", "/homestudi/**").permitAll()
+            // Nur Admins: Verwaltung von Profilen, Nutzern und Themen
+            .requestMatchers("/admin", "/admin/**", "/homeadmin", "/addProfile", "/addusers", "/addTopics").hasRole("ADMIN")
+            // Nur Betreuer (Rolle wird beim Login vergeben, wenn ein Betreuerprofil existiert)
+            .requestMatchers("/betreuerProfil", "/betreuerProfil/**").hasRole("BETREUER")
+            // Alles andere: nur eingeloggt
             .anyRequest().authenticated())
         .oauth2Login(oauth -> oauth
             .loginPage("/login")

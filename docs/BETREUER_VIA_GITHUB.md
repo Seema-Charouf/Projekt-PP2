@@ -32,7 +32,7 @@ UPDATE betreuer_profil SET github_id = 12345678 WHERE profile_id = 1001;
 ## 3. Prüfen
 
 - Mit GitHub einloggen
-- `/betreuerProfil` aufrufen (ohne `?testUser=`)
+- `/betreuerProfil` aufrufen
 - Das eigene Betreuerprofil sollte angezeigt werden
 
 ---

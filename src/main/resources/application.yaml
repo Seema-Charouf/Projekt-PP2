@@ -6,7 +6,7 @@ logging:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/thesis404
+    url: ${DB_URL:jdbc:postgresql://localhost:5434/thesis404}
     username: thesisuser
     password: thesis404pass
 
@@ -22,4 +22,3 @@ spring:
 app:
   security:
     admin-ids: ${ADMIN_IDS:}
-    test-user-enabled: ${TEST_USER_ENABLED:false}
