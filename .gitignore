@@ -24,6 +24,8 @@ bin/
 
 ### IntelliJ IDEA ###
 /.*/
+# Ausnahme: GitHub-Actions-Workflows müssen ins Repo
+!/.github/
 /.idea/
 *.iws
 *.iml

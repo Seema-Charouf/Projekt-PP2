@@ -57,6 +57,45 @@ jacoco {
     toolVersion = "0.8.12"
 }
 
+// Klassen ohne eigene Logik bzw. nur für die lokale Entwicklung zählen nicht zur Abdeckung
+def coverageAusnahmen = [
+        'dse/thesis404/Thesis404Application*',
+        'dse/thesis404/infrastructure/config/TestDataInitializer*',
+        'dse/thesis404/infrastructure/web/form/**',
+]
+
+jacocoTestReport {
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: coverageAusnahmen)
+        }))
+    }
+}
+
+// Der Build schlägt fehl, wenn die Testabdeckung unter die Mindestgrenze fällt.
+// Startwert bewusst vorsichtig – nach dem ersten Lauf im Bericht nachsehen und schrittweise erhöhen.
+jacocoTestCoverageVerification {
+    dependsOn tasks.named('test')
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: coverageAusnahmen)
+        }))
+    }
+    violationRules {
+        rule {
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.60
+            }
+        }
+    }
+}
+
+tasks.named('check') {
+    dependsOn tasks.named('jacocoTestCoverageVerification')
+}
+
 spotbugsMain {
     ignoreFailures = true  // Report erstellen, Build nicht blockieren
     reports {

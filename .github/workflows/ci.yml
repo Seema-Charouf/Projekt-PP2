@@ -1,0 +1,42 @@
+# Continuous Integration: Bei jedem Push und jedem Pull Request wird das Projekt
+# auf einem frischen Linux-Rechner gebaut und ALLE Tests laufen – inkl. ArchUnit,
+# Testcontainers (Docker ist auf GitHub-Runnern vorinstalliert) und Coverage-Prüfung.
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Code auschecken
+        uses: actions/checkout@v4
+
+      - name: Java 21 einrichten
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Gradle einrichten (mit Cache)
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Bauen und testen
+        run: |
+          chmod +x gradlew
+          ./gradlew build --no-daemon
+
+      - name: Testberichte hochladen (auch bei Fehlern)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: testberichte
+          path: |
+            build/reports/tests/test/
+            build/reports/jacoco/test/html/
+          retention-days: 14
