@@ -1,5 +1,7 @@
 package dse.thesis404.infrastructure.web.controller;
 
+import dse.thesis404.application.exception.ZugriffVerweigertException;
+import dse.thesis404.application.exception.NichtGefundenException;
 import dse.thesis404.application.command.UploadInfoFileCommand;
 import dse.thesis404.application.port.ThemeRepository;
 import dse.thesis404.application.service.BetreuerProfilService;
@@ -35,7 +37,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Controller
 @RequestMapping("/betreuerProfil")
@@ -90,16 +91,16 @@ public class BetreuerProfilController {
      */
     private ProfileId currentProfileId(Principal principal) {
         if (principal == null) {
-            throw new SecurityException("Nicht authentifiziert.");
+            throw new ZugriffVerweigertException("Nicht authentifiziert.");
         }
 
         Long githubId = OAuth2PrincipalUtils.extractGitHubId(principal).orElse(null);
         if (githubId == null) {
-            throw new SecurityException("Keine gültige GitHub-ID.");
+            throw new ZugriffVerweigertException("Keine gültige GitHub-ID.");
         }
         return betreuerProfilService.findByGithubId(githubId)
                 .map(BetreuerProfil::getId)
-                .orElseThrow(() -> new SecurityException(
+                .orElseThrow(() -> new ZugriffVerweigertException(
                         "Du bist kein Betreuer. Es existiert kein Betreuerprofil für deine GitHub-ID. " +
                         "Bitte wende dich an einen Administrator."));
     }
@@ -310,10 +311,10 @@ public class BetreuerProfilController {
         ThemeId themeId = toThemeId(rawThemeId);
 
         Theme theme = themeRepository.findById(themeId)
-                .orElseThrow(() -> new NoSuchElementException("Theme nicht gefunden: " + rawThemeId));
+                .orElseThrow(() -> new NichtGefundenException("Theme nicht gefunden: " + rawThemeId));
 
         if (!theme.getOwnerProfileId().equals(myId)) {
-            throw new SecurityException("Kein Zugriff: Theme gehört nicht zu diesem Profil.");
+            throw new ZugriffVerweigertException("Kein Zugriff: Theme gehört nicht zu diesem Profil.");
         }
 
         ThemeForm form = new ThemeForm();
@@ -359,7 +360,7 @@ public class BetreuerProfilController {
             model.addAttribute("requiredModuleForm", new FachgebietForm());
 
             Theme theme = themeRepository.findById(themeId)
-                    .orElseThrow(() -> new NoSuchElementException("Theme nicht gefunden: " + rawThemeId));
+                    .orElseThrow(() -> new NichtGefundenException("Theme nicht gefunden: " + rawThemeId));
             model.addAttribute("theme", theme);
             return "editTheme";
         }
@@ -436,10 +437,10 @@ public class BetreuerProfilController {
         ThemeId themeId = toThemeId(rawThemeId);
 
         Theme theme = themeRepository.findById(themeId)
-                .orElseThrow(() -> new NoSuchElementException("Theme nicht gefunden: " + rawThemeId));
+                .orElseThrow(() -> new NichtGefundenException("Theme nicht gefunden: " + rawThemeId));
 
         if (!theme.getOwnerProfileId().equals(myId)) {
-            throw new SecurityException("Kein Zugriff: Theme gehört nicht zu diesem Profil.");
+            throw new ZugriffVerweigertException("Kein Zugriff: Theme gehört nicht zu diesem Profil.");
         }
 
         model.addAttribute("theme", theme);
@@ -527,7 +528,7 @@ public class BetreuerProfilController {
         Datei datei = profil.getFiles().stream()
                 .filter(f -> f.id().equals(fileId))
                 .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("Datei nicht gefunden: " + rawFileId));
+                .orElseThrow(() -> new NichtGefundenException("Datei nicht gefunden: " + rawFileId));
 
         var result = dateiViewService.loadForDownload(datei);
 
@@ -606,7 +607,7 @@ public class BetreuerProfilController {
                 betreuerProfilService.declineRequest(myId, studentId, themeId);
                 ra.addFlashAttribute("info", "Anfrage abgelehnt.");
             }
-        } catch (IllegalArgumentException | NoSuchElementException e) {
+        } catch (IllegalArgumentException | NichtGefundenException e) {
             ra.addFlashAttribute("error", e.getMessage());
         }
         return "redirect:/betreuerProfil";

@@ -9,13 +9,10 @@ import dse.thesis404.application.service.AdminUserListService;
 import dse.thesis404.application.service.TopicService;
 import dse.thesis404.application.service.UserService;
 import dse.thesis404.domain.model.theme.Veranstaltung;
-import dse.thesis404.infrastructure.config.security.OAuth2PrincipalUtils;
 import jakarta.validation.Valid;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -61,21 +58,6 @@ public class WebController {
   @GetMapping("/login")
   public String login(){
     return "login";
-  }
-
-  @GetMapping("/login-debug")
-  public String loginDebug(Authentication auth, Model model) {
-    String name = auth != null ? OAuth2PrincipalUtils.displayName(auth) : "nicht eingeloggt";
-    Long githubId = auth != null ? OAuth2PrincipalUtils.extractGitHubId(auth).orElse(null) : null;
-    model.addAttribute("githubId", githubId);
-    List<String> roles = auth != null
-        ? auth.getAuthorities().stream()
-            .map(a -> a.getAuthority())
-            .collect(Collectors.toList())
-        : List.of();
-    model.addAttribute("userName", name);
-    model.addAttribute("roles", roles);
-    return "login-debug";
   }
 
   @GetMapping("/private")

@@ -1,5 +1,7 @@
 package dse.thesis404.infrastructure.web.security;
 
+import dse.thesis404.application.port.BetreuerProfilRepository;
+import dse.thesis404.testutil.BetreuerProfilMother;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -27,6 +29,8 @@ class SecurityMvcTest {
 
     @Autowired
     private MockMvc mvc;
+    @Autowired
+    private BetreuerProfilRepository betreuerProfilRepository;
 
     @Nested
     @DisplayName("Public Endpunkte: permitAll → 200")
@@ -149,9 +153,14 @@ class SecurityMvcTest {
         }
 
         @Test
-        void betreuerProfil_mit_betreuerrolle_wird_nicht_von_security_blockiert() throws Exception {
-            mvc.perform(get("/betreuerProfil").with(user("betreuer").roles("BETREUER")))
-                    .andExpect(result -> assertThat(result.getResponse().getStatus()).isNotEqualTo(403));
+        void betreuerProfil_mit_echtem_betreuer_200() throws Exception {
+            if (betreuerProfilRepository.findByGithubId(4713L).isEmpty()) {
+                betreuerProfilRepository.save(BetreuerProfilMother.withGithubId(4713L));
+            }
+            mvc.perform(get("/betreuerProfil").with(oauth2Login()
+                            .attributes(a -> a.put("id", 4713L))
+                            .authorities(new SimpleGrantedAuthority("ROLE_BETREUER"))))
+                    .andExpect(status().isOk());
         }
     }
 

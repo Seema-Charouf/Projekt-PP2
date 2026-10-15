@@ -1,5 +1,6 @@
 package dse.thesis404.application.service;
 
+import dse.thesis404.application.exception.NichtGefundenException;
 import dse.thesis404.application.port.FileStoragePort;
 import dse.thesis404.application.port.MarkdownRendererPort;
 import dse.thesis404.domain.model.shared.Datei;
@@ -8,7 +9,6 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -63,7 +63,7 @@ public class DateiViewService {
 
         Optional<InputStream> opt = fileStorage.load(storedFilename);
         InputStream stream = opt.orElseThrow(() ->
-                new NoSuchElementException("Datei nicht im Dateisystem gefunden: " + storedFilename)
+                new NichtGefundenException("Datei nicht im Dateisystem gefunden: " + storedFilename)
         );
 
         try (InputStream in = stream; ByteArrayOutputStream out = new ByteArrayOutputStream()) {

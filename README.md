@@ -10,7 +10,7 @@ Für den Login werden Umgebungsvariablen benötigt:
 Optional (für Admin-Zugriff): `ADMIN_IDS=12345678,87654321` – GitHub-numerische IDs mit ROLE_ADMIN
 
 
-**Betreuer-Zugriff:** Ein Nutzer kann die Betreuer-Seite nur nutzen, wenn ein Betreuerprofil mit seiner GitHub-ID in der DB existiert. Die numerische GitHub-ID steht nach dem Login auf `/login-debug`. Anleitung zum Anlegen: siehe `docs/BETREUER_VIA_GITHUB.md`.
+**Betreuer-Zugriff:** Ein Nutzer kann die Betreuer-Seite nur nutzen, wenn ein Betreuerprofil mit seiner GitHub-ID in der DB existiert. Die numerische GitHub-ID steht nach dem Login auf `/login-debug` (nur im Profil `dev`, in IntelliJ unter *Active profiles* `dev` eintragen). Anleitung zum Anlegen: siehe `docs/BETREUER_VIA_GITHUB.md`.
 
 *GitHub OAuth App Callback URL:* `http://localhost:8080/login/oauth2/code/github` (Port anpassen bei anderem Server-Port)
 

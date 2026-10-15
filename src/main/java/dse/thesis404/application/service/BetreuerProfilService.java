@@ -1,5 +1,6 @@
 package dse.thesis404.application.service;
 
+import dse.thesis404.application.exception.NichtGefundenException;
 import dse.thesis404.application.command.UploadInfoFileCommand;
 import dse.thesis404.application.port.BetreuerProfilRepository;
 import dse.thesis404.application.port.FileStoragePort;
@@ -20,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -74,7 +74,7 @@ public class BetreuerProfilService {
     
     @Transactional
     public void acceptRequest(ProfileId betreuerId, ProfileId studentId, ThemeId themeId) {
-        Theme theme = themeRepository.findById(themeId).orElseThrow(() -> new NoSuchElementException("Thema nicht gefunden"));
+        Theme theme = themeRepository.findById(themeId).orElseThrow(() -> new NichtGefundenException("Thema nicht gefunden"));
         if (!theme.getOwnerProfileId().equals(betreuerId)) {
             throw new IllegalArgumentException("Thema gehört nicht diesem Betreuer");
         }
@@ -84,7 +84,7 @@ public class BetreuerProfilService {
     
     @Transactional
     public void declineRequest(ProfileId betreuerId, ProfileId studentId, ThemeId themeId) {
-        Theme theme = themeRepository.findById(themeId).orElseThrow(() -> new NoSuchElementException("Thema nicht gefunden"));
+        Theme theme = themeRepository.findById(themeId).orElseThrow(() -> new NichtGefundenException("Thema nicht gefunden"));
         if (!theme.getOwnerProfileId().equals(betreuerId)) {
             throw new IllegalArgumentException("Thema gehört nicht diesem Betreuer");
         }
@@ -94,7 +94,7 @@ public class BetreuerProfilService {
     @Transactional(readOnly = true)
     public BetreuerProfil getById(ProfileId id) {
         return profilRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("BetreuerProfil nicht gefunden: " + id));
+                .orElseThrow(() -> new NichtGefundenException("BetreuerProfil nicht gefunden: " + id));
     }
 
     @Transactional(readOnly = true)
@@ -202,7 +202,7 @@ public class BetreuerProfilService {
         Datei file = profil.getFiles().stream()
                 .filter(f -> f.id().equals(fileId))
                 .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("Datei nicht gefunden: " + fileId));
+                .orElseThrow(() -> new NichtGefundenException("Datei nicht gefunden: " + fileId));
 
         profil.deleteFileById(fileId);
         profilRepository.save(profil);

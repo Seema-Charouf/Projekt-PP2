@@ -1,5 +1,7 @@
 package dse.thesis404.application.service;
 
+import dse.thesis404.application.exception.ZugriffVerweigertException;
+import dse.thesis404.application.exception.NichtGefundenException;
 import dse.thesis404.application.command.UploadInfoFileCommand;
 import dse.thesis404.application.port.BetreuerProfilRepository;
 import dse.thesis404.application.port.FileStoragePort;
@@ -13,7 +15,6 @@ import dse.thesis404.domain.model.theme.ThemeId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 
@@ -188,7 +189,7 @@ public class ThemeService {
         Datei file = theme.getFiles().stream()
                 .filter(f -> f.id().equals(fileId))
                 .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("Datei nicht gefunden: " + fileId));
+                .orElseThrow(() -> new NichtGefundenException("Datei nicht gefunden: " + fileId));
 
         theme.deleteFile(fileId);
         themeRepository.save(theme);
@@ -206,10 +207,10 @@ public class ThemeService {
         Objects.requireNonNull(actorProfileId, "actorProfileId");
 
         Theme theme = themeRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Theme nicht gefunden: " + id));
+                .orElseThrow(() -> new NichtGefundenException("Theme nicht gefunden: " + id));
 
         if (!theme.getOwnerProfileId().equals(actorProfileId)) {
-            throw new SecurityException("Kein Zugriff: Theme gehört nicht zu diesem Profil.");
+            throw new ZugriffVerweigertException("Kein Zugriff: Theme gehört nicht zu diesem Profil.");
         }
         return theme;
     }
