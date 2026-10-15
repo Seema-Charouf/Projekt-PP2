@@ -53,17 +53,6 @@
         </td>
     </tr>
     
-    <tr data-row="dummy-seema" data-name="Seema" data-rolle="Admin" data-github="seema@example.com" data-module="Programmierpraktikum1">
-        <td th:text="${#lists.size(adminUsers) + 1}">1</td>
-        <td class="col-name">Seema</td>
-        <td class="col-rolle">Admin</td>
-        <td class="col-github">seema@example.com</td>
-        <td class="col-module">Programmierpraktikum1</td>
-        <td>
-            <a href="#" class="editBTN1" data-action="edit">Bearbeiten</a> /
-            <a href="#" class="editBTN1" data-action="delete">Löschen</a>
-        </td>
-    </tr>
     <tr th:if="${#lists.isEmpty(adminUsers)}">
         <td colspan="6" class="text-muted">Keine Einträge in der Datenbank (Betreuer, Studenten oder Admin-IDs konfigurieren).</td>
     </tr>

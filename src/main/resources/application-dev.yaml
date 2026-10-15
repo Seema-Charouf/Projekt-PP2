@@ -1,3 +1,8 @@
 # Einstellungen nur für die lokale Entwicklung (Profil "dev").
 # Hinweis: Den früheren Test-Login per ?testUser=... gibt es nicht mehr.
 # Zum Testen anderer Rollen: zweiter GitHub-Account oder die MockMvc-Tests.
+
+app:
+  security:
+    # In der lokalen Demo ist Seema (GitHub-ID 148059646) Admin – kann per ADMIN_IDS überschrieben werden.
+    admin-ids: ${ADMIN_IDS:148059646}

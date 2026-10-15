@@ -90,7 +90,9 @@
             </div>
           </div>
 
+          <input type="hidden" name="suche" value="1">
           <button type="submit" class="btn btn-primary mt-3">Matching anzeigen</button>
+          <a th:href="@{/homestudi(suche=1)}" class="btn btn-outline-secondary mt-3 ms-2">Auswahl zurücksetzen</a>
         </form>
       </div>
 
@@ -109,6 +111,7 @@
               <th:block th:if="${isLoggedIn}">
                 <form th:if="${requestedThemeIds != null and !requestedThemeIds.contains(st.theme.id.value.toString())}"
                       th:action="@{/homestudi/request/{tid}(tid=${st.theme.id.value})}" method="post" class="d-inline">
+                  <input type="hidden" name="zurueck" value="suche">
                   <button type="submit" class="btn btn-sm btn-outline-primary">Thema anfragen</button>
                 </form>
                 <span th:if="${requestedThemeIds != null and requestedThemeIds.contains(st.theme.id.value.toString())}"

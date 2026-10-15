@@ -9,6 +9,7 @@ import dse.thesis404.domain.model.betreuer.ContactInformations;
 import dse.thesis404.domain.model.betreuer.Email;
 import dse.thesis404.domain.model.betreuer.PhoneNumber;
 import dse.thesis404.domain.model.betreuer.Raum;
+import dse.thesis404.domain.model.betreuer.Titel;
 import dse.thesis404.domain.model.shared.ProfileId;
 import dse.thesis404.domain.model.student.RequestStatus;
 import dse.thesis404.domain.model.student.Student;
@@ -25,6 +26,9 @@ import org.springframework.stereotype.Component;
 @Component
 @Profile("!test")
 public class TestDataInitializer {
+
+    /** Deine GitHub-ID – dein Betreuerprofil heißt in der Demo "Seema". */
+    static final long SEEMA_GITHUB_ID = 148059646L;
 
     private static final Logger log = LoggerFactory.getLogger(TestDataInitializer.class);
 
@@ -49,8 +53,11 @@ public class TestDataInitializer {
     public void initTestData() {
         log.info("=== Initialisiere Testdaten ===");
 
-        if (!betreuerProfilRepository.findAll().isEmpty()) {
-            log.info("Daten bereits vorhanden, überspringe Testdaten-Initialisierung.");
+        // Vorher: übersprungen, sobald IRGENDEIN Betreuer existierte – durch Migration V5 also immer.
+        // Jetzt: Demo-Betreuer nur anlegen, wenn sie noch fehlen; Seemas Demo-Profil wird immer eingerichtet.
+        if (betreuerProfilRepository.exists(ProfileId.ofGithubUserId(1001))) {
+            log.info("Demo-Betreuer 1001–1005 bereits vorhanden, überspringe sie.");
+            seemaEinrichten();
             return;
         }
 
@@ -323,8 +330,110 @@ public class TestDataInitializer {
                 ProfileId.ofGithubUserId(2002), theme3.getId(), RequestStatus.PENDING));
         log.info("2 Beispiel-Anfragen (Student-Thema) erstellt.");
 
+        seemaEinrichten();
+
         log.info("=== Testdaten-Initialisierung abgeschlossen ===");
         log.info("Verfügbare Test-Benutzer (GitHub IDs): 1001–1005 (Betreuer), 2001–2005 (Studenten)");
+    }
+
+    /**
+     * Seemas Betreuerprofil für die Demo: Name "Seema", zwei eigene Themen und offene Anfragen
+     * von Demo-Studierenden – so kann man "Anfrage annehmen/ablehnen" direkt zeigen.
+     * Läuft bei jedem Start, legt aber nur an, was noch fehlt.
+     */
+    private void seemaEinrichten() {
+        ProfileId seemaId = ProfileId.ofGithubUserId(SEEMA_GITHUB_ID);
+
+        BetreuerProfil seema = betreuerProfilRepository.findById(seemaId)
+                .orElseGet(() -> createBetreuer(seemaId, "Seema", "seema@example.com", null, "25.12.02.11"));
+        seema.updateTitel(Titel.NONE);
+        seema.updateName("Seema");
+        if (seema.getMail().email().endsWith("@placeholder.local")) {
+            seema.updateEmail("seema@example.com");
+        }
+        if (seema.getFachgebiete().isEmpty()) {
+            seema.addFachgebiet("Software Engineering");
+            seema.addFachgebiet("IT-Sicherheit");
+        }
+        betreuerProfilRepository.save(seema);
+
+        // Altes Thema aus Migration V7 ("Abschlussarbeit bei Prof. Dr. Seema Charouf") sinnvoll umbenennen
+        themeRepository.findByOwnerProfileId(seemaId).stream()
+                .filter(t -> t.getTitel().contains("Prof. Dr."))
+                .forEach(t -> {
+                    t.updateTitel("Matching-Algorithmen für die Vergabe von Abschlussarbeiten");
+                    t.updateBeschreibung("Entwicklung und Bewertung eines **Matching-Verfahrens**, das Studierende "
+                            + "anhand von Vorkenntnissen und Interessen passenden Themen zuordnet.");
+                    if (t.getAngeforderteVeranstaltungen().isEmpty()) {
+                        t.addVeranstaltung("Programmierung");
+                        t.addVeranstaltung("Algorithmen und Datenstrukturen");
+                    }
+                    if (t.getFachgebiete().isEmpty()) {
+                        t.addFachgebiet("Software Engineering");
+                    }
+                    themeRepository.save(t);
+                });
+
+        if (themeRepository.findByOwnerProfileId(seemaId).size() < 2) {
+            Theme matching = createTheme(seemaId,
+                    "Matching-Algorithmen für die Vergabe von Abschlussarbeiten",
+                    "Entwicklung und Bewertung eines **Matching-Verfahrens**, das Studierende anhand von "
+                            + "Vorkenntnissen und Interessen passenden Themen zuordnet.");
+            matching.addFachgebiet("Software Engineering");
+            matching.addVeranstaltung("Programmierung");
+            matching.addVeranstaltung("Algorithmen und Datenstrukturen");
+            if (themeRepository.findByOwnerProfileId(seemaId).isEmpty()) {
+                themeRepository.save(matching);
+            }
+
+            Theme security = createTheme(seemaId,
+                    "Sichere Web-Anwendungen mit Spring Security",
+                    "Analyse typischer Schwachstellen (**OWASP Top 10**) in Spring-Boot-Anwendungen und "
+                            + "Absicherung mit Rollen, CSRF-Schutz und automatisierten Security-Tests.");
+            security.addFachgebiet("IT-Sicherheit");
+            security.addFachgebiet("Software Engineering");
+            security.addVeranstaltung("Softwaretechnik");
+            security.addVeranstaltung("Programmierung");
+            themeRepository.save(security);
+        }
+
+        // Demo-Studierende (werden beim ersten Start oben angelegt; hier nur, falls sie fehlen)
+        Student max = studentRepository.findById(ProfileId.ofGithubUserId(2001)).orElseGet(() -> {
+            Student s = new Student(ProfileId.ofGithubUserId(2001));
+            s.setDisplayName("Max Mustermann");
+            s.addVeranstaltung("Programmierung");
+            s.addInteresse("Software Engineering");
+            studentRepository.save(s);
+            return s;
+        });
+        Student felix = studentRepository.findById(ProfileId.ofGithubUserId(2005)).orElseGet(() -> {
+            Student s = new Student(ProfileId.ofGithubUserId(2005));
+            s.setDisplayName("Felix Klein");
+            s.addVeranstaltung("Programmierung");
+            s.addInteresse("Backend-Entwicklung");
+            studentRepository.save(s);
+            return s;
+        });
+        Student tom = studentRepository.findById(ProfileId.ofGithubUserId(2003)).orElseGet(() -> {
+            Student s = new Student(ProfileId.ofGithubUserId(2003));
+            s.setDisplayName("Tom Schneider");
+            s.addVeranstaltung("IT-Sicherheit");
+            s.addInteresse("IT-Sicherheit");
+            studentRepository.save(s);
+            return s;
+        });
+
+        // Offene Anfragen an Seemas Themen (nur anlegen, wenn es die Anfrage noch nicht gibt)
+        var themen = themeRepository.findByOwnerProfileId(seemaId);
+        for (Theme t : themen) {
+            boolean securityThema = t.getTitel().contains("Security");
+            for (Student s : securityThema ? java.util.List.of(tom, felix) : java.util.List.of(max)) {
+                if (!studentThemeRequestRepository.exists(s.getId(), t.getId())) {
+                    studentThemeRequestRepository.save(new StudentThemeRequest(s.getId(), t.getId(), RequestStatus.PENDING));
+                }
+            }
+        }
+        log.info("Demo-Profil 'Seema' ({}) mit {} Themen und offenen Anfragen eingerichtet.", SEEMA_GITHUB_ID, themen.size());
     }
 
     private BetreuerProfil createBetreuer(ProfileId id, String name, String email, String phone, String raum) {

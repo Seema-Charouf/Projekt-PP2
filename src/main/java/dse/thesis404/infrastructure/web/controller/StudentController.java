@@ -86,9 +86,13 @@ public class StudentController {
             @RequestParam(required = false) List<String> attended,
             @RequestParam(required = false) List<String> interesse,
             @RequestParam(required = false) Long selectedId,
+            @RequestParam(required = false) String suche,
             Principal principal,
             Model model
     ) {
+        // "suche" kommt nur mit, wenn das Formular abgeschickt wurde – auch bei leerer Auswahl.
+        // So lässt sich "Seite neu geöffnet" (gespeicherte Auswahl laden) von "Auswahl geleert" unterscheiden.
+        boolean sucheAbgeschickt = suche != null;
         model.addAttribute("veranstaltungenOptions", VERANSTALTUNGEN_OPTIONS);
         model.addAttribute("interessenOptions", INTERESSEN_OPTIONS);
 
@@ -99,7 +103,7 @@ public class StudentController {
             OAuth2PrincipalUtils.extractProfileId(principal).ifPresent(profileId -> {
                 String displayName = OAuth2PrincipalUtils.displayName(principal);
                 Student student = studentService.getOrCreateStudent(profileId, displayName);
-                if (attendedSet.isEmpty() && interessenSet.isEmpty()) {
+                if (!sucheAbgeschickt && attendedSet.isEmpty() && interessenSet.isEmpty()) {
                     student.getBesuchteVeranstaltungen().forEach(v -> attendedSet.add(v.name()));
                     student.getInteressen().forEach(f -> interessenSet.add(f.fachgebiet()));
                 } else {
@@ -182,7 +186,9 @@ public class StudentController {
 
     
     @PostMapping("/request/{themeId}")
-    public String requestTheme(@PathVariable("themeId") String rawThemeId, Principal principal, RedirectAttributes ra) {
+    public String requestTheme(@PathVariable("themeId") String rawThemeId,
+                               @RequestParam(value = "zurueck", required = false) String zurueck,
+                               Principal principal, RedirectAttributes ra) {
         ThemeId themeId;
         try {
             themeId = ThemeId.parse(rawThemeId);
@@ -202,7 +208,8 @@ public class StudentController {
         }
         studentService.requestTheme(studentId, themeId);
         ra.addFlashAttribute("info", "Anfrage wurde gesendet.");
-        return "redirect:/homestudi/themen";
+        // Zurück zur Seite, von der angefragt wurde. Nur feste Ziele erlaubt (kein Open Redirect).
+        return "themen".equals(zurueck) ? "redirect:/homestudi/themen" : "redirect:/homestudi";
     }
 
 
