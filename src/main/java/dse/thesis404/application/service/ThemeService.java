@@ -15,14 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.regex.Pattern;
 import java.util.Set;
 
 @Service
 public class ThemeService {
-
-    private static final Pattern ANY_SCRIPT_TAG =
-            Pattern.compile("(?i)<\\s*script\\b");
 
     private final ThemeRepository themeRepository;
     private final BetreuerProfilRepository betreuerProfilRepository;
@@ -53,8 +49,8 @@ public class ThemeService {
             throw new IllegalArgumentException("BetreuerProfil existiert nicht: " + ownerProfileId);
         }
 
+        // Kein Inhaltsfilter: Die Beschreibung wird beim Anzeigen HTML-escaped (th:text).
         String md = markdownBeschreibung == null ? "" : markdownBeschreibung;
-        assertNoScriptTag(md);
 
         Theme theme = new Theme(
                 ThemeId.newId(),
@@ -107,7 +103,6 @@ public class ThemeService {
         Theme theme = loadOwnedTheme(themeId, actorProfileId);
 
         String md = markdown == null ? "" : markdown;
-        assertNoScriptTag(md);
 
         theme.updateBeschreibung(md);
         themeRepository.save(theme);
@@ -217,12 +212,5 @@ public class ThemeService {
             throw new SecurityException("Kein Zugriff: Theme gehört nicht zu diesem Profil.");
         }
         return theme;
-    }
-
-    private static void assertNoScriptTag(String text) {
-        if (text == null) return;
-        if (ANY_SCRIPT_TAG.matcher(text).find()) {
-            throw new IllegalArgumentException("In Markdown ist <script> nicht erlaubt.");
-        }
     }
 }

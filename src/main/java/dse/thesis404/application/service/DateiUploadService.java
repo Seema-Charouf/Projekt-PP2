@@ -8,13 +8,11 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.regex.Pattern;
 
 @Service
 public class DateiUploadService {
@@ -22,12 +20,6 @@ public class DateiUploadService {
     private final FileStoragePort fileStorage;
     private final Clock clock;
 
-    private static final Pattern SCRIPT_BLOCK =
-            Pattern.compile("(?is)<\\s*script\\b[^>]*>.*?<\\s*/\\s*script\\s*>");
-    private static final Pattern SCRIPT_SELF_CLOSING =
-            Pattern.compile("(?is)<\\s*script\\b[^>]*/\\s*>");
-    private static final Pattern ANY_SCRIPT_TAG =
-            Pattern.compile("(?i)<\\s*script\\b");
 
     public DateiUploadService(FileStoragePort fileStorage, Clock clock) {
         this.fileStorage = Objects.requireNonNull(fileStorage, "fileStorage");
@@ -59,12 +51,13 @@ public class DateiUploadService {
         try (InputStream in = cmd.data()) {
 
             if (type == Datei.FileType.MARKDOWN) {
+                // Markdown wird unverändert gespeichert. Schutz vor XSS passiert beim Anzeigen
+                // (MarkdownRendererPort escaped HTML), nicht durch einen Inhaltsfilter beim Upload.
                 byte[] raw = readAllBytesWithLimit(in, Datei.MAX_BYTES);
-                byte[] sanitized = sanitizeMarkdown(raw);
-                storedSizeBytes = sanitized.length;
+                storedSizeBytes = raw.length;
 
-                try (ByteArrayInputStream sanitizedIn = new ByteArrayInputStream(sanitized)) {
-                    fileStorage.store(storedFilename, sanitizedIn);
+                try (ByteArrayInputStream rawIn = new ByteArrayInputStream(raw)) {
+                    fileStorage.store(storedFilename, rawIn);
                 }
 
             } else {
@@ -124,19 +117,6 @@ public class DateiUploadService {
         }
     }
 
-    
-    private static byte[] sanitizeMarkdown(byte[] rawBytes) {
-        String md = new String(rawBytes, StandardCharsets.UTF_8);
-
-        String sanitized = SCRIPT_BLOCK.matcher(md).replaceAll("");
-        sanitized = SCRIPT_SELF_CLOSING.matcher(sanitized).replaceAll("");
-
-        if (ANY_SCRIPT_TAG.matcher(sanitized).find()) {
-            throw new IllegalArgumentException("Markdown darf kein <script>-Tag enthalten!");
-        }
-
-        return sanitized.getBytes(StandardCharsets.UTF_8);
-    }
 
     
     public record StoredFileResult(Datei meta, String storedFilename) { }

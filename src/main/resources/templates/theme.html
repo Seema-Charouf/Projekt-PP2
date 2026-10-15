@@ -34,11 +34,8 @@
           <section class="mb-4">
             <h5>Beschreibung</h5>
             <div th:if="${theme.beschreibung != null}" class="border rounded p-3 bg-white">
-              
-              <div th:if="${beschreibungHtml != null}" th:utext="${beschreibungHtml}">
-                Beschreibung wird hier angezeigt...
-              </div>
-              <div th:if="${beschreibungHtml == null}" th:text="${theme.beschreibung.markdown()}">
+              <!-- th:text escaped HTML automatisch (Schutz vor XSS). Kein th:utext ohne Sanitizer! -->
+              <div th:text="${theme.beschreibung.markdown()}">
                 Markdown-Text
               </div>
             </div>

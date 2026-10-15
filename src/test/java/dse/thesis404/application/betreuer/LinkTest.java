@@ -43,4 +43,39 @@ class LinkTest {
                     .hasMessageContaining("URL");
         }
     }
+
+    @Nested
+    @DisplayName("Nur http/https erlaubt (Schutz vor XSS über Links)")
+    class Schemas {
+
+        @Test
+        void http_ist_erlaubt() {
+            assertThat(Link.fromTextToURL("http://hhu.de", "HHU").url().getProtocol()).isEqualTo("http");
+        }
+
+        @Test
+        void https_gross_geschrieben_ist_erlaubt() {
+            assertThat(Link.fromTextToURL("HTTPS://hhu.de", "HHU").text()).isEqualTo("HHU");
+        }
+
+        @Test
+        void javascript_link_wird_abgelehnt() {
+            assertThatThrownBy(() -> Link.fromTextToURL("javascript:alert('XSS')", "Klick"))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        void file_link_wird_abgelehnt() {
+            assertThatThrownBy(() -> Link.fromTextToURL("file:///etc/passwd", "Datei"))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining("http");
+        }
+
+        @Test
+        void ftp_link_wird_abgelehnt() {
+            assertThatThrownBy(() -> Link.fromTextToURL("ftp://hhu.de/datei", "FTP"))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining("http");
+        }
+    }
 }

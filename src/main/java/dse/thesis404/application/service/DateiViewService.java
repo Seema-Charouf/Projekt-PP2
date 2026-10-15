@@ -11,7 +11,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.regex.Pattern;
 
 @Service
 public class DateiViewService {
@@ -19,12 +18,6 @@ public class DateiViewService {
     private final FileStoragePort fileStorage;
     private final MarkdownRendererPort markdownRenderer;
 
-    private static final Pattern SCRIPT_BLOCK =
-            Pattern.compile("(?is)<\\s*script\\b[^>]*>.*?<\\s*/\\s*script\\s*>");
-    private static final Pattern SCRIPT_SELF_CLOSING =
-            Pattern.compile("(?is)<\\s*script\\b[^>]*/\\s*>");
-    private static final Pattern ANY_SCRIPT_TAG =
-            Pattern.compile("(?i)<\\s*script\\b");
 
     public DateiViewService(FileStoragePort fileStorage, MarkdownRendererPort markdownRenderer) {
         this.fileStorage = Objects.requireNonNull(fileStorage, "fileStorage");
@@ -60,15 +53,9 @@ public class DateiViewService {
 
         String md = new String(raw, StandardCharsets.UTF_8);
 
-        String safeMd = sanitizeMarkdownOrThrow(md);
-
-        String html = markdownRenderer.toHtml(safeMd);
-
-        if (ANY_SCRIPT_TAG.matcher(html).find()) {
-            throw new IllegalArgumentException("Gerenderte HTML enthält verbotene <script>-Tags.");
-        }
-
-        return html;
+        // Sicherheit: Der MarkdownRendererPort muss jedes HTML im Text escapen.
+        // Nur weil der Renderer escaped, darf sein Ergebnis überhaupt mit th:utext ausgegeben werden.
+        return markdownRenderer.toHtml(md);
     }
 
     private byte[] loadBytesFromStorage(String storedFilename, long maxBytes) {
@@ -99,16 +86,6 @@ public class DateiViewService {
             if (e instanceof IllegalArgumentException iae) throw iae;
             throw new FileStoragePort.FileStorageException("Datei konnte nicht gelesen werden.", e);
         }
-    }
-
-    private static String sanitizeMarkdownOrThrow(String md) {
-        String sanitized = SCRIPT_BLOCK.matcher(md).replaceAll("");
-        sanitized = SCRIPT_SELF_CLOSING.matcher(sanitized).replaceAll("");
-
-        if (ANY_SCRIPT_TAG.matcher(sanitized).find()) {
-            throw new IllegalArgumentException("Markdown darf kein <script>-Tag enthalten!");
-        }
-        return sanitized;
     }
 
     private static String preferredDownloadFilename(Datei datei) {
