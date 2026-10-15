@@ -7,7 +7,6 @@ import dse.thesis404.domain.model.theme.Beschreibung;
 import dse.thesis404.domain.model.theme.Theme;
 import dse.thesis404.domain.model.theme.ThemeId;
 import dse.thesis404.infrastructure.persistence.jdbc.entity.ThemeAggregate;
-import dse.thesis404.infrastructure.persistence.jdbc.entity.DateiEntity;
 import dse.thesis404.infrastructure.persistence.jdbc.entity.ThemeDateiRef;
 import dse.thesis404.infrastructure.persistence.jdbc.entity.ThemeFachgebiet;
 import dse.thesis404.infrastructure.persistence.jdbc.entity.ThemeLink;
@@ -16,25 +15,26 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
 
     private final ThemeDataRepository themeDataRepository;
     private final DateiDataRepository dateiDataRepository;
+    private final DateiSynchronisierung dateien;
 
     public JdbcThemeRepository(
             ThemeDataRepository themeDataRepository,
-            DateiDataRepository dateiDataRepository
+            DateiDataRepository dateiDataRepository,
+            DateiSynchronisierung dateien
     ) {
         this.themeDataRepository = themeDataRepository;
         this.dateiDataRepository = dateiDataRepository;
+        this.dateien = dateien;
     }
 
     @Override
@@ -52,25 +52,35 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findByOwnerProfileId(ProfileId ownerProfileId) {
-        return StreamSupport.stream(themeDataRepository.findAll().spliterator(), false)
-                .filter(agg -> Objects.equals(ownerProfileId.value(), agg.getOwnerProfileId()))
+        return themeDataRepository.findByOwnerProfileId(ownerProfileId.value()).stream()
                 .map(this::toDomain)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
     public void save(Theme theme) {
-        for (Datei file : theme.getFiles()) {
-            dateiDataRepository.save(DateiEntity.fromDomain(file));
-        }
+        UUID id = theme.getId().value();
+        Optional<ThemeAggregate> vorher = themeDataRepository.findById(id);
+        Set<UUID> alteDateiIds = vorher.map(JdbcThemeRepository::dateiIds).orElse(Set.of());
+
+        dateien.neueEinfuegen(theme.getFiles(), alteDateiIds);
         ThemeAggregate agg = toAggregate(theme);
-        agg.setNew(!themeDataRepository.existsById(theme.getId().value()));
+        agg.setNew(vorher.isEmpty());
         themeDataRepository.save(agg);
+        dateien.entfernteLoeschen(alteDateiIds, theme.getFiles());
     }
 
     @Override
     public void delete(ThemeId id) {
-        themeDataRepository.deleteById(id.value());
+        themeDataRepository.findById(id.value()).ifPresent(agg -> {
+            Set<UUID> dateiIds = dateiIds(agg);
+            themeDataRepository.deleteById(id.value());   // Verknüpfungen gehen per ON DELETE CASCADE mit
+            dateien.alleLoeschen(dateiIds);                 // die Datei-Zeilen selbst nicht – daher hier
+        });
+    }
+
+    private static Set<UUID> dateiIds(ThemeAggregate agg) {
+        return agg.getFileRefs().stream().map(ThemeDateiRef::getFileId).collect(Collectors.toSet());
     }
 
     @Override

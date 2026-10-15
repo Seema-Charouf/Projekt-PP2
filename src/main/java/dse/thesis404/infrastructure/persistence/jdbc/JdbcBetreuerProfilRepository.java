@@ -13,13 +13,13 @@ import dse.thesis404.infrastructure.persistence.jdbc.entity.BetreuerFachgebiet;
 import dse.thesis404.infrastructure.persistence.jdbc.entity.BetreuerLink;
 import dse.thesis404.infrastructure.persistence.jdbc.entity.BetreuerProfilAggregate;
 import dse.thesis404.infrastructure.persistence.jdbc.entity.BetreuerProfilDateiRef;
-import dse.thesis404.infrastructure.persistence.jdbc.entity.DateiEntity;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Repository
@@ -27,13 +27,16 @@ public class JdbcBetreuerProfilRepository implements BetreuerProfilRepository {
 
     private final BetreuerProfilDataRepository betreuerProfilDataRepository;
     private final DateiDataRepository dateiDataRepository;
+    private final DateiSynchronisierung dateien;
 
     public JdbcBetreuerProfilRepository(
             BetreuerProfilDataRepository betreuerProfilDataRepository,
-            DateiDataRepository dateiDataRepository
+            DateiDataRepository dateiDataRepository,
+            DateiSynchronisierung dateien
     ) {
         this.betreuerProfilDataRepository = betreuerProfilDataRepository;
         this.dateiDataRepository = dateiDataRepository;
+        this.dateien = dateien;
     }
 
     @Override
@@ -57,17 +60,27 @@ public class JdbcBetreuerProfilRepository implements BetreuerProfilRepository {
 
     @Override
     public void save(BetreuerProfil profil) {
-        for (Datei file : profil.getFiles()) {
-            dateiDataRepository.save(DateiEntity.fromDomain(file));
-        }
+        Optional<BetreuerProfilAggregate> vorher = betreuerProfilDataRepository.findById(profil.getId().value());
+        Set<UUID> alteDateiIds = vorher.map(JdbcBetreuerProfilRepository::dateiIds).orElse(Set.of());
+
+        dateien.neueEinfuegen(profil.getFiles(), alteDateiIds);
         BetreuerProfilAggregate agg = toAggregate(profil);
-        agg.setNew(!betreuerProfilDataRepository.existsById(profil.getId().value()));
+        agg.setNew(vorher.isEmpty());
         betreuerProfilDataRepository.save(agg);
+        dateien.entfernteLoeschen(alteDateiIds, profil.getFiles());
     }
 
     @Override
     public void delete(ProfileId id) {
-        betreuerProfilDataRepository.deleteById(id.value());
+        betreuerProfilDataRepository.findById(id.value()).ifPresent(agg -> {
+            Set<UUID> dateiIds = dateiIds(agg);
+            betreuerProfilDataRepository.deleteById(id.value());
+            dateien.alleLoeschen(dateiIds);
+        });
+    }
+
+    private static Set<UUID> dateiIds(BetreuerProfilAggregate agg) {
+        return agg.getFileRefs().stream().map(BetreuerProfilDateiRef::getFileId).collect(Collectors.toSet());
     }
 
     @Override

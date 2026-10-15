@@ -22,6 +22,8 @@ import java.util.Set;
 @Service
 public class ThemeService {
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ThemeService.class);
+
     private final ThemeRepository themeRepository;
     private final BetreuerProfilRepository betreuerProfilRepository;
     private final DateiUploadService dateiUploadService;
@@ -91,6 +93,14 @@ public class ThemeService {
     public void deleteTheme(ThemeId themeId, ProfileId actorProfileId) {
         Theme theme = loadOwnedTheme(themeId, actorProfileId);
         themeRepository.delete(theme.getId());
+        // Erst Datenbank, dann Dateien: schlägt das Löschen einer Datei fehl, bleibt höchstens
+        // eine ungenutzte Datei im Speicher liegen – nie ein DB-Eintrag, der ins Leere zeigt.
+        for (Datei datei : theme.getFiles()) {
+            if (!dateiUploadService.deleteFromStorage(datei)) {
+                log.warn("Datei {} von Thema {} konnte nicht aus dem Speicher gelöscht werden",
+                        datei.storedFilename(), themeId);
+            }
+        }
     }
 
     @Transactional

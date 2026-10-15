@@ -3,6 +3,8 @@ package dse.thesis404.infrastructure.persistence.jdbc.entity;
 import dse.thesis404.domain.model.shared.Datei;
 import dse.thesis404.domain.model.shared.FileId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.domain.Persistable;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -10,7 +12,30 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Table("datei")
-public class DateiEntity {
+/**
+ * Die UUID wird in der Domain vergeben (nicht von der DB). Ohne Persistable hält Spring Data JDBC
+ * jedes Objekt mit gesetzter ID für "schon gespeichert" und macht ein UPDATE statt INSERT → Fehler.
+ */
+public class DateiEntity implements Persistable<UUID> {
+
+    @Transient
+    private boolean isNew = false;
+
+    @Override
+    public UUID getId() {
+        return fileId;
+    }
+
+    @Override
+    public boolean isNew() {
+        return isNew;
+    }
+
+    public DateiEntity alsNeu() {
+        this.isNew = true;
+        return this;
+    }
+
 
     @Id
     @Column("file_id")
