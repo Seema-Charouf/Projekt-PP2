@@ -4,7 +4,6 @@ ToDos_Seema.md
 ToDo_Projekt_Allgemein.png
 .gradle
 /.gradle/
-/gradle/
 /build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
