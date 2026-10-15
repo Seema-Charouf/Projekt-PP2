@@ -9,12 +9,12 @@ public record Email(String email) {
         "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
     );
 
-    public Email{ 
-        email = email.trim();
-
+    public Email {
+        // Erst auf null/leer prüfen, dann trimmen – sonst NullPointerException statt klarer Meldung.
         if (email == null || email.isBlank()) {
             throw new IllegalArgumentException("Email darf nicht leer sein!");
         }
+        email = email.trim();
         if (!EMAIL_PATTERN.matcher(email).matches()) {
             throw new IllegalArgumentException("Ungültige Email-Adresse: " + email);
         }

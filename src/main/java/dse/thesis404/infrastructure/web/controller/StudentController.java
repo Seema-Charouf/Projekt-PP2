@@ -100,8 +100,8 @@ public class StudentController {
                 String displayName = OAuth2PrincipalUtils.displayName(principal);
                 Student student = studentService.getOrCreateStudent(profileId, displayName);
                 if (attendedSet.isEmpty() && interessenSet.isEmpty()) {
-                    attendedSet.addAll(student.getBesuchteVeranstaltungen());
-                    interessenSet.addAll(student.getInteressen());
+                    student.getBesuchteVeranstaltungen().forEach(v -> attendedSet.add(v.name()));
+                    student.getInteressen().forEach(f -> interessenSet.add(f.fachgebiet()));
                 } else {
                     studentService.saveStudentPreferences(profileId, attendedSet, interessenSet);
                 }

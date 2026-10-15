@@ -58,7 +58,9 @@ public class AdminUserListService {
             String name = s.getDisplayName() != null && !s.getDisplayName().isBlank()
                     ? s.getDisplayName() : "Student " + id;
             String role = buildRole(id, adminIds, false, true);
-            String modules = String.join(", ", s.getBesuchteVeranstaltungen());
+            String modules = s.getBesuchteVeranstaltungen().stream()
+                    .map(Veranstaltung::name)
+                    .collect(Collectors.joining(", "));
             rows.add(new AdminUserRow(id, name, role, String.valueOf(id), modules));
         }
 

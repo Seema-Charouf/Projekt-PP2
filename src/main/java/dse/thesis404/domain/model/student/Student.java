@@ -1,6 +1,8 @@
 package dse.thesis404.domain.model.student;
 
+import dse.thesis404.domain.model.shared.Fachgebiet;
 import dse.thesis404.domain.model.shared.ProfileId;
+import dse.thesis404.domain.model.theme.Veranstaltung;
 
 import java.util.LinkedHashSet;
 import java.util.Objects;
@@ -10,8 +12,9 @@ public final class Student {
 
     private final ProfileId id;
     private String displayName;
-    private final Set<String> besuchteVeranstaltungen;
-    private final Set<String> interessen;
+    // Value Objects statt Strings: "Programmierung" und " programmierung " sind dieselbe Veranstaltung.
+    private final Set<Veranstaltung> besuchteVeranstaltungen;
+    private final Set<Fachgebiet> interessen;
 
     public Student(ProfileId id) {
         this.id = Objects.requireNonNull(id, "ProfileId darf nicht null sein!");
@@ -32,37 +35,39 @@ public final class Student {
         this.displayName = displayName != null && !displayName.isBlank() ? displayName.trim() : null;
     }
 
-    public Set<String> getBesuchteVeranstaltungen() {
+    public Set<Veranstaltung> getBesuchteVeranstaltungen() {
         return Set.copyOf(besuchteVeranstaltungen);
     }
 
-    public Set<String> getInteressen() {
+    public Set<Fachgebiet> getInteressen() {
         return Set.copyOf(interessen);
     }
 
+    /** Leere Eingaben (z. B. ein nicht ausgefülltes Formularfeld) werden ignoriert. */
     public void addVeranstaltung(String name) {
         if (name != null && !name.isBlank()) {
-            besuchteVeranstaltungen.add(name.trim());
+            besuchteVeranstaltungen.add(new Veranstaltung(name));
         }
     }
 
+    /** Leere Eingaben (z. B. ein nicht ausgefülltes Formularfeld) werden ignoriert. */
     public void addInteresse(String name) {
         if (name != null && !name.isBlank()) {
-            interessen.add(name.trim());
+            interessen.add(new Fachgebiet(name));
         }
     }
 
     public void setBesuchteVeranstaltungen(Set<String> names) {
         besuchteVeranstaltungen.clear();
         if (names != null) {
-            names.stream().filter(Objects::nonNull).map(String::trim).filter(s -> !s.isEmpty()).forEach(besuchteVeranstaltungen::add);
+            names.forEach(this::addVeranstaltung);
         }
     }
 
     public void setInteressen(Set<String> names) {
         interessen.clear();
         if (names != null) {
-            names.stream().filter(Objects::nonNull).map(String::trim).filter(s -> !s.isEmpty()).forEach(interessen::add);
+            names.forEach(this::addInteresse);
         }
     }
 }

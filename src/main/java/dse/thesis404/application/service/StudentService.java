@@ -90,8 +90,8 @@ public class StudentService {
     
     @Transactional(readOnly = true)
     public List<ScoredTheme> findMatchingThemes(Set<String> attended, Set<String> interessen) {
-        Set<String> a = normalize(attended);
-        Set<String> i = normalize(interessen);
+        Set<String> a = veranstaltungsKeys(attended);
+        Set<String> i = fachgebietsKeys(interessen);
         if (a.isEmpty() && i.isEmpty()) {
             return List.of();
         }
@@ -112,8 +112,8 @@ public class StudentService {
     
     @Transactional(readOnly = true)
     public List<ScoredBetreuer> findMatchingBetreuer(Set<String> attended, Set<String> interessen) {
-        Set<String> a = normalize(attended);
-        Set<String> i = normalize(interessen);
+        Set<String> a = veranstaltungsKeys(attended);
+        Set<String> i = fachgebietsKeys(interessen);
         if (a.isEmpty() && i.isEmpty()) {
             return List.of();
         }
@@ -157,12 +157,20 @@ public class StudentService {
         return score;
     }
 
-    private static Set<String> normalize(Set<String> raw) {
-        if (raw == null || raw.isEmpty()) return Set.of();
+    // Vergleich über die Value Objects: gleiche Regeln (trim, Leerzeichen, Groß/klein) wie in Theme.
+    private static Set<String> veranstaltungsKeys(Set<String> raw) {
+        if (raw == null) return Set.of();
         return raw.stream()
-                .filter(Objects::nonNull)
-                .map(s -> s.trim().toLowerCase(Locale.ROOT))
-                .filter(s -> !s.isEmpty())
+                .filter(s -> s != null && !s.isBlank())
+                .map(s -> new Veranstaltung(s).key())
+                .collect(Collectors.toSet());
+    }
+
+    private static Set<String> fachgebietsKeys(Set<String> raw) {
+        if (raw == null) return Set.of();
+        return raw.stream()
+                .filter(s -> s != null && !s.isBlank())
+                .map(s -> new Fachgebiet(s).key())
                 .collect(Collectors.toSet());
     }
 

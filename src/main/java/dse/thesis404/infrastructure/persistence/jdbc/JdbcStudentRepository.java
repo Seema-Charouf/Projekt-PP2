@@ -82,11 +82,11 @@ public class JdbcStudentRepository implements StudentRepository {
         agg.setProfileId(student.getId().value());
         agg.setDisplayName(student.getDisplayName());
         Set<StudentVeranstaltung> veranstaltungen = student.getBesuchteVeranstaltungen().stream()
-                .map(StudentVeranstaltung::new)
+                .map(v -> new StudentVeranstaltung(v.name()))
                 .collect(Collectors.toSet());
         agg.setVeranstaltungen(veranstaltungen);
         Set<StudentFachgebiet> fachgebiete = student.getInteressen().stream()
-                .map(StudentFachgebiet::new)
+                .map(f -> new StudentFachgebiet(f.fachgebiet()))
                 .collect(Collectors.toSet());
         agg.setFachgebiete(fachgebiete);
         return agg;

@@ -99,15 +99,11 @@ public final class Theme {
         if (linkText == null || linkText.isBlank()) {
             throw new IllegalArgumentException("Link-Text darf nicht null oder leer sein!");
         }
-        try {
-            Link linkToDelete = Link.fromTextToURL(urlString.trim(), linkText.trim());
-            links.removeIf(link -> 
-                link.url().equals(linkToDelete.url()) && 
+        Link linkToDelete = Link.fromTextToURL(urlString.trim(), linkText.trim());
+        links.removeIf(link ->
+                link.url().equals(linkToDelete.url()) &&
                 link.text().equals(linkToDelete.text())
-            );
-        } catch (IllegalArgumentException e) {
-            throw e;
-        }
+        );
     }
 
     public void deleteFile(FileId fileId){
