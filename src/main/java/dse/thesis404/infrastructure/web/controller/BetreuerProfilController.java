@@ -3,7 +3,6 @@ package dse.thesis404.infrastructure.web.controller;
 import dse.thesis404.application.exception.ZugriffVerweigertException;
 import dse.thesis404.application.exception.NichtGefundenException;
 import dse.thesis404.application.command.UploadInfoFileCommand;
-import dse.thesis404.application.port.ThemeRepository;
 import dse.thesis404.application.service.BetreuerProfilService;
 import dse.thesis404.application.service.DateiViewService;
 import dse.thesis404.application.service.ThemeService;
@@ -45,7 +44,6 @@ public class BetreuerProfilController {
 
     private final BetreuerProfilService betreuerProfilService;
     private final ThemeService themeService;
-    private final ThemeRepository themeRepository;
     private final MultipartFileToCommandConverter fileConverter;
     private final DateiViewService dateiViewService;
 
@@ -74,13 +72,11 @@ public class BetreuerProfilController {
     public BetreuerProfilController(
             BetreuerProfilService betreuerProfilService,
             ThemeService themeService,
-            ThemeRepository themeRepository,
             MultipartFileToCommandConverter fileConverter,
             DateiViewService dateiViewService
     ) {
         this.betreuerProfilService = betreuerProfilService;
         this.themeService = themeService;
-        this.themeRepository = themeRepository;
         this.fileConverter = fileConverter;
         this.dateiViewService = dateiViewService;
     }
@@ -119,7 +115,7 @@ public class BetreuerProfilController {
 
         BetreuerProfil profil = betreuerProfilService.getById(myId);
 
-        List<Theme> myThemes = themeRepository.findByOwnerProfileId(myId);
+        List<Theme> myThemes = themeService.findByOwner(myId);
 
         List<Datei> documents = profil.getFiles();
 
@@ -310,12 +306,7 @@ public class BetreuerProfilController {
         ProfileId myId = currentProfileId(principal);
         ThemeId themeId = toThemeId(rawThemeId);
 
-        Theme theme = themeRepository.findById(themeId)
-                .orElseThrow(() -> new NichtGefundenException("Theme nicht gefunden: " + rawThemeId));
-
-        if (!theme.getOwnerProfileId().equals(myId)) {
-            throw new ZugriffVerweigertException("Kein Zugriff: Theme gehört nicht zu diesem Profil.");
-        }
+        Theme theme = themeService.getOwnedTheme(themeId, myId);
 
         ThemeForm form = new ThemeForm();
         form.setTitel(theme.getTitel());
@@ -359,8 +350,8 @@ public class BetreuerProfilController {
             model.addAttribute("allVeranstaltungen", ALL_VERANSTALTUNGEN);
             model.addAttribute("requiredModuleForm", new FachgebietForm());
 
-            Theme theme = themeRepository.findById(themeId)
-                    .orElseThrow(() -> new NichtGefundenException("Theme nicht gefunden: " + rawThemeId));
+            // Vorher ohne Besitzer-Prüfung geladen – jetzt nur das eigene Thema.
+            Theme theme = themeService.getOwnedTheme(themeId, myId);
             model.addAttribute("theme", theme);
             return "editTheme";
         }
@@ -436,12 +427,7 @@ public class BetreuerProfilController {
         ProfileId myId = currentProfileId(principal);
         ThemeId themeId = toThemeId(rawThemeId);
 
-        Theme theme = themeRepository.findById(themeId)
-                .orElseThrow(() -> new NichtGefundenException("Theme nicht gefunden: " + rawThemeId));
-
-        if (!theme.getOwnerProfileId().equals(myId)) {
-            throw new ZugriffVerweigertException("Kein Zugriff: Theme gehört nicht zu diesem Profil.");
-        }
+        Theme theme = themeService.getOwnedTheme(themeId, myId);
 
         model.addAttribute("theme", theme);
 

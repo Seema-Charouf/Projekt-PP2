@@ -15,6 +15,7 @@ import dse.thesis404.domain.model.theme.ThemeId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -200,6 +201,19 @@ public class ThemeService {
                     "Datei konnte nicht aus dem Dateisystem gelöscht werden: " + file.storedFilename()
             );
         }
+    }
+
+    /** Alle Themen eines Betreuers (für seine Übersichtsseite). */
+    @Transactional(readOnly = true)
+    public List<Theme> findByOwner(ProfileId ownerProfileId) {
+        Objects.requireNonNull(ownerProfileId, "ownerProfileId");
+        return themeRepository.findByOwnerProfileId(ownerProfileId);
+    }
+
+    /** Lädt ein Thema nur, wenn es dem anfragenden Betreuer gehört (sonst 404 bzw. 403). */
+    @Transactional(readOnly = true)
+    public Theme getOwnedTheme(ThemeId themeId, ProfileId actorProfileId) {
+        return loadOwnedTheme(themeId, actorProfileId);
     }
 
     private Theme loadOwnedTheme(ThemeId id, ProfileId actorProfileId) {

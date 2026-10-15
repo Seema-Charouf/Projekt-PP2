@@ -1,4 +1,4 @@
-package dse.thesis404.infrastructure.web.dto;
+package dse.thesis404.application.dto;
 
 public record AdminUserRow(
         long id,

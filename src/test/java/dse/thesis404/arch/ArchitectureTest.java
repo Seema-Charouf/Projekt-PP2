@@ -40,6 +40,15 @@ class ArchitectureTest {
         }
 
         @Test
+        void domain_nutzt_nur_java_und_sich_selbst() {
+            ArchRule rule = classes()
+                    .that().resideInAPackage("..domain..")
+                    .should().onlyDependOnClassesThat().resideInAnyPackage("..domain..", "java..")
+                    .because("die Fachlogik soll ohne Framework, Datenbank oder Web verständlich und testbar sein");
+            rule.check(classes);
+        }
+
+        @Test
         void domain_haengt_nicht_von_infrastructure_ab() {
             ArchRule rule = noClasses()
                     .that().resideInAPackage("..domain..")
@@ -49,8 +58,41 @@ class ArchitectureTest {
     }
 
     @Nested
+    @DisplayName("Application unabhängig von Infrastructure")
+    class ApplicationIndependence {
+
+        @Test
+        void application_haengt_nicht_von_infrastructure_ab() {
+            ArchRule rule = noClasses()
+                    .that().resideInAPackage("..application..")
+                    .should().dependOnClassesThat().resideInAPackage("..infrastructure..")
+                    .because("Use Cases dürfen weder Web-Formulare/DTOs noch Persistenz-Klassen kennen");
+            rule.check(classes);
+        }
+
+        @Test
+        void application_kennt_kein_web_und_kein_servlet() {
+            ArchRule rule = noClasses()
+                    .that().resideInAPackage("..application..")
+                    .should().dependOnClassesThat().resideInAnyPackage(
+                            "org.springframework.web..", "jakarta.servlet..", "org.springframework.ui..")
+                    .because("HTTP ist ein Detail der äußeren Schicht");
+            rule.check(classes);
+        }
+    }
+
+    @Nested
     @DisplayName("Controller nutzen keine JDBC-Repositories direkt")
     class ControllerRules {
+
+        @Test
+        void controller_nutzen_keine_ports_direkt() {
+            ArchRule rule = noClasses()
+                    .that().resideInAPackage("..infrastructure.web..")
+                    .should().dependOnClassesThat().resideInAPackage("..application.port..")
+                    .because("Controller sprechen mit Application Services, damit Prüfungen wie Besitzrechte nicht umgangen werden");
+            rule.check(classes);
+        }
 
         @Test
         void controller_nutzen_keine_jdbc_repos_direkt() {
@@ -83,6 +125,7 @@ class ArchitectureTest {
                     .layer("Infrastructure").definedBy("..infrastructure..")
                     .whereLayer("Application").mayOnlyBeAccessedByLayers("Infrastructure")
                     .whereLayer("Domain").mayOnlyBeAccessedByLayers("Application", "Infrastructure")
+                    .whereLayer("Infrastructure").mayNotBeAccessedByAnyLayer()
                     .check(classes);
         }
     }

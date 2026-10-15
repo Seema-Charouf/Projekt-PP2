@@ -8,7 +8,7 @@ import dse.thesis404.domain.model.shared.ProfileId;
 import dse.thesis404.domain.model.student.Student;
 import dse.thesis404.domain.model.theme.Theme;
 import dse.thesis404.domain.model.theme.Veranstaltung;
-import dse.thesis404.infrastructure.web.dto.AdminUserRow;
+import dse.thesis404.application.dto.AdminUserRow;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

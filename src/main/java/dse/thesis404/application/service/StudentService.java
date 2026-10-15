@@ -14,8 +14,8 @@ import dse.thesis404.domain.model.student.StudentThemeRequest;
 import dse.thesis404.domain.model.theme.Theme;
 import dse.thesis404.domain.model.theme.ThemeId;
 import dse.thesis404.domain.model.theme.Veranstaltung;
-import dse.thesis404.infrastructure.web.dto.ScoredBetreuer;
-import dse.thesis404.infrastructure.web.dto.ScoredTheme;
+import dse.thesis404.application.dto.ScoredBetreuer;
+import dse.thesis404.application.dto.ScoredTheme;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

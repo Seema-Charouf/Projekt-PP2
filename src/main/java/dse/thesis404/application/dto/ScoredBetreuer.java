@@ -1,4 +1,4 @@
-package dse.thesis404.infrastructure.web.dto;
+package dse.thesis404.application.dto;
 
 import dse.thesis404.domain.model.betreuer.BetreuerProfil;
 

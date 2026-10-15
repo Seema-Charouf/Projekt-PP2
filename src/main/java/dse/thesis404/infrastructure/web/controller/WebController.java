@@ -1,5 +1,8 @@
 package dse.thesis404.infrastructure.web.controller;
 
+import dse.thesis404.application.command.NeuesProfilCommand;
+import dse.thesis404.application.command.NeuesThemaCommand;
+
 import dse.thesis404.infrastructure.web.form.AddUserForm;
 import dse.thesis404.infrastructure.web.form.FachgebietForm;
 import dse.thesis404.infrastructure.web.form.ProfileForm;
@@ -90,7 +93,7 @@ public class WebController {
       model.addAttribute("profileForm", profileForm);
       return "addProfile";
     }
-    addProfileService.addProfile(profileForm);
+    addProfileService.addProfile(new NeuesProfilCommand(profileForm.getName(), profileForm.getFachgebiete()));
     return "redirect:/addProfile";
   }
 
@@ -112,7 +115,8 @@ public class WebController {
       model.addAttribute("allVeranstaltungen", knownVeranstaltungen);
       return "addTopics";
     }
-    topicService.addTheme(themeForm);
+    topicService.addTheme(new NeuesThemaCommand(themeForm.getTitel(), themeForm.getBeschreibungMarkdown(),
+        themeForm.getFachgebiete(), themeForm.getRequiredModules()));
     return "redirect:/addTopics";
   }
 
@@ -127,7 +131,7 @@ public class WebController {
     if(bindingResult.hasErrors()) {
       return "addusers";
     }
-    userService.createUserFromForm(addUserForm);
+    userService.createUser(addUserForm.getGithubid(), addUserForm.getRole());
     return "redirect:/admin";
   }
 
