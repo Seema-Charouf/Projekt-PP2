@@ -1,6 +1,7 @@
 package dse.thesis404.infrastructure.persistence.inmemory;
 
 import dse.thesis404.application.port.FileStoragePort;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
@@ -10,7 +11,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
+/** Nur für Tests: schnell, aber nach einem Neustart sind alle Dateien weg. */
 @Component
+@Profile("test")
 public class InMemoryFileStorage implements FileStoragePort {
 
     private final Map<String, byte[]> storage = new ConcurrentHashMap<>();

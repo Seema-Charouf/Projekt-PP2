@@ -20,5 +20,8 @@ spring:
             scope: read:user
 
 app:
+  storage:
+    # Hier landen hochgeladene Dateien (PDF, ZIP, MD). In Produktion auf ein persistentes Volume zeigen lassen.
+    verzeichnis: ${UPLOAD_DIR:./data/uploads}
   security:
     admin-ids: ${ADMIN_IDS:}

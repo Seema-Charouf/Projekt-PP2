@@ -10,23 +10,16 @@ Damit ein echter GitHub-Nutzer die Betreuer-Seite nutzen kann, muss sein Profil 
 
 ## 2. Betreuerprofil anlegen (SQL)
 
-**Option A:** Neues Profil mit deiner GitHub-ID anlegen:
+Die `profile_id` eines Betreuers **ist** seine numerische GitHub-ID (seit Migration V11 gibt es keine
+separate Spalte `github_id` mehr – genau wie bei Studierenden und `ADMIN_IDS`).
 
 ```sql
 -- Ersetze 12345678 durch deine echte GitHub-ID aus /login-debug
--- profile_id muss eindeutig sein (z.B. 2000, 2001, … – nicht 1001–1005, die sind Testdaten)
-INSERT INTO betreuer_profil (profile_id, github_id, titel, name, email, phone, raum)
-VALUES (2000, 12345678, 'NONE', 'Dein Name', 'deine.email@example.de', NULL, '25.12.00.01');
+INSERT INTO betreuer_profil (profile_id, titel, name, email, phone, raum)
+VALUES (12345678, 'NONE', 'Dein Name', 'deine.email@example.de', NULL, '25.12.00.01');
 
 -- Optional: Fachgebiet hinzufügen
-INSERT INTO betreuer_fachgebiet (profile_id, fachgebiet) VALUES (2000, 'Software Engineering');
-```
-
-**Option B:** Bestehendes Test-Profil auf deine GitHub-ID umbiegen (nur für lokale Entwicklung):
-
-```sql
--- Vorsicht: Betreuer 1001 (Prof. Dr. Anna Schmidt) wird zu deinem Profil
-UPDATE betreuer_profil SET github_id = 12345678 WHERE profile_id = 1001;
+INSERT INTO betreuer_fachgebiet (profile_id, fachgebiet) VALUES (12345678, 'Software Engineering');
 ```
 
 ## 3. Prüfen

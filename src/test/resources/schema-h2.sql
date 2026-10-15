@@ -1,7 +1,6 @@
 -- Test-Schema für H2 (NUR Test-Scope, Migrations bleiben unverändert)
 CREATE TABLE IF NOT EXISTS betreuer_profil (
     profile_id BIGINT PRIMARY KEY,
-    github_id BIGINT NOT NULL UNIQUE,
     titel VARCHAR(20) NOT NULL DEFAULT 'NONE',
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,

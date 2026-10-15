@@ -41,4 +41,18 @@ class BetreuerProfilRepositoryTest {
 
         assertThat(found.getId().value()).isEqualTo(3000);
     }
+
+    @Test
+    void nach_dem_bearbeiten_ist_das_profil_weiter_ueber_die_github_id_auffindbar() {
+        // Vorher wurde github_id bei jedem Speichern überschrieben – jetzt gibt es nur noch eine ID.
+        BetreuerProfil profil = BetreuerProfilMother.withGithubId(5000);
+        repository.save(profil);
+
+        profil.updateName("Neuer Name");
+        repository.save(profil);
+
+        BetreuerProfil gefunden = repository.findByGithubId(5000).orElseThrow();
+        assertThat(gefunden.getName()).isEqualTo("Neuer Name");
+        assertThat(gefunden.getId()).isEqualTo(profil.getId());
+    }
 }

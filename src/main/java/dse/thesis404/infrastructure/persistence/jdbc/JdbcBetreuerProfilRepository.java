@@ -47,8 +47,8 @@ public class JdbcBetreuerProfilRepository implements BetreuerProfilRepository {
 
     @Override
     public Optional<BetreuerProfil> findByGithubId(long githubId) {
-        return betreuerProfilDataRepository.findByGithubId(githubId)
-                .map(this::toDomain);
+        // Eine ID für alles: Die ProfileId eines Betreuers ist seine GitHub-ID (wie bei Studierenden).
+        return findById(ProfileId.ofGithubUserId(githubId));
     }
 
     @Override
@@ -127,7 +127,6 @@ public class JdbcBetreuerProfilRepository implements BetreuerProfilRepository {
     private BetreuerProfilAggregate toAggregate(BetreuerProfil profil) {
         BetreuerProfilAggregate agg = new BetreuerProfilAggregate();
         agg.setProfileId(profil.getId().value());
-        agg.setGithubId(profil.getId().value());
         agg.setTitel(profil.getTitel().name());
         agg.setName(profil.getName());
         agg.setEmail(profil.getMail().email());

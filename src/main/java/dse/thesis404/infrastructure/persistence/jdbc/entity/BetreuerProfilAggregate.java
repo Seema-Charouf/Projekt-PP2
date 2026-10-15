@@ -16,9 +16,6 @@ public class BetreuerProfilAggregate implements Persistable<Long> {
     @org.springframework.data.relational.core.mapping.Column("profile_id")
     private Long profileId;
 
-    @org.springframework.data.relational.core.mapping.Column("github_id")
-    private Long githubId;
-
     private String titel;
     private String name;
     private String email;
@@ -60,14 +57,6 @@ public class BetreuerProfilAggregate implements Persistable<Long> {
 
     public void setProfileId(Long profileId) {
         this.profileId = profileId;
-    }
-
-    public Long getGithubId() {
-        return githubId;
-    }
-
-    public void setGithubId(Long githubId) {
-        this.githubId = githubId;
     }
 
     public String getTitel() {
