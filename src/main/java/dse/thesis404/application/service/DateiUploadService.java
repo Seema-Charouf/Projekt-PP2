@@ -66,7 +66,9 @@ public class DateiUploadService {
                 fileStorage.store(storedFilename, in);
             }
 
-        } catch (FileStoragePort.FileStorageException e) {
+        } catch (FileStoragePort.FileStorageException | IllegalArgumentException e) {
+            // Validierungsfehler (leer, zu groß) unverändert weitergeben – sie sind für Nutzer bestimmt.
+            // Vorher wurden sie hier in einen technischen Fehler verpackt und die Meldung ging verloren.
             throw e;
         } catch (Exception e) {
             throw new FileStoragePort.FileStorageException("Datei konnte nicht gespeichert werden.", e);
