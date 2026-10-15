@@ -205,10 +205,6 @@ public class StudentController {
         return "redirect:/homestudi/themen";
     }
 
-    @GetMapping("/request/{themeId}")
-    public String requestThemeGet(@PathVariable("themeId") String rawThemeId, Principal principal, RedirectAttributes ra) {
-        return requestTheme(rawThemeId, principal, ra);
-    }
 
     private static Set<String> toSet(List<String> list) {
         if (list == null) return Set.of();

@@ -57,9 +57,11 @@
             <ul class="list-group" th:if="${theme != null and theme.angeforderteVeranstaltungen != null and !#lists.isEmpty(theme.angeforderteVeranstaltungen)}">
               <li th:each="veranstaltung : ${theme.angeforderteVeranstaltungen}" class="list-group-item d-flex justify-content-between align-items-center">
                 <span th:text="${veranstaltung.name()}">Veranstaltung</span>
-                <a th:href="@{/betreuerProfil/editTheme/{id}/deleteVeranstaltung(id=${themeId}, veranstaltungToDelete=${veranstaltung.name()})}"
-                   class="btn btn-outline-danger btn-sm"
-                   onclick="return confirm('Sind Sie sicher, dass Sie diese Veranstaltung entfernen möchten?')">Löschen</a>
+                <form th:action="@{/betreuerProfil/editTheme/{id}/deleteVeranstaltung(id=${themeId})}" method="post" class="d-inline"
+                      onsubmit="return confirm('Sind Sie sicher, dass Sie diese Veranstaltung entfernen möchten?')">
+                  <input type="hidden" name="veranstaltungToDelete" th:value="${veranstaltung.name()}">
+                  <button type="submit" class="btn btn-outline-danger btn-sm">Löschen</button>
+                </form>
               </li>
             </ul>
             <div th:if="${theme == null or theme.angeforderteVeranstaltungen == null or #lists.isEmpty(theme.angeforderteVeranstaltungen)}" class="alert alert-info">
@@ -71,9 +73,10 @@
           <div class="d-flex justify-content-between mt-4">
             <a th:href="@{/betreuerProfil}" class="btn btn-outline-secondary">Abbrechen</a>
             <div>
-              <a th:href="@{/betreuerProfil/deleteTheme/{id}(id=${themeId})}"
-                 class="btn btn-outline-danger me-2"
-                 onclick="return confirm('Sind Sie sicher, dass Sie dieses Thema löschen möchten?')">Löschen</a>
+              <form th:action="@{/betreuerProfil/deleteTheme/{id}(id=${themeId})}" method="post" class="d-inline"
+                    onsubmit="return confirm('Sind Sie sicher, dass Sie dieses Thema löschen möchten?')">
+                <button type="submit" class="btn btn-outline-danger me-2">Löschen</button>
+              </form>
               <button type="submit" form="themeForm" class="btn btn-primary">Speichern</button>
             </div>
           </div>

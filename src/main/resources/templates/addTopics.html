@@ -57,9 +57,11 @@
                         <ul class="list-group" th:if="${themeForm != null and themeForm.requiredModules != null and !#lists.isEmpty(themeForm.requiredModules)}">
                             <li th:each="veranstaltung : ${themeForm.requiredModules}" class="list-group-item d-flex justify-content-between align-items-center">
                                 <span th:text="${veranstaltung}">Veranstaltung</span>
-                                <a th:href="@{/betreuerProfil/themes/new/deleteVeranstaltung(veranstaltungToDelete=${veranstaltung})}"
-                                   class="btn btn-outline-danger btn-sm"
-                                   onclick="return confirm('Sind Sie sicher, dass Sie diese Veranstaltung entfernen möchten?')">Löschen</a>
+                                <form th:action="@{/betreuerProfil/themes/new/deleteVeranstaltung}" method="post" class="d-inline"
+                                      onsubmit="return confirm('Sind Sie sicher, dass Sie diese Veranstaltung entfernen möchten?')">
+                                    <input type="hidden" name="veranstaltungToDelete" th:value="${veranstaltung}">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">Löschen</button>
+                                </form>
                             </li>
                         </ul>
                         <div th:if="${themeForm == null or themeForm.requiredModules == null or #lists.isEmpty(themeForm.requiredModules)}" class="alert alert-info">

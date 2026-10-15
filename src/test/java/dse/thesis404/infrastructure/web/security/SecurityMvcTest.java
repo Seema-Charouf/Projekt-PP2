@@ -188,4 +188,49 @@ class SecurityMvcTest {
                     .andExpect(status().isForbidden());
         }
     }
+
+    @Nested
+    @DisplayName("Zustandsänderungen nur per POST mit CSRF-Token")
+    class NurPost {
+
+        private static final String THEME_ID = "a0000001-0000-4000-8000-000000000001";
+
+        @Test
+        void deleteTheme_per_get_405() throws Exception {
+            mvc.perform(get("/betreuerProfil/deleteTheme/" + THEME_ID).with(user("b").roles("BETREUER")))
+                    .andExpect(status().isMethodNotAllowed());
+        }
+
+        @Test
+        void acceptTheme_per_get_405() throws Exception {
+            mvc.perform(get("/betreuerProfil/acceptTheme/1:" + THEME_ID).with(user("b").roles("BETREUER")))
+                    .andExpect(status().isMethodNotAllowed());
+        }
+
+        @Test
+        void deleteDocument_per_get_405() throws Exception {
+            mvc.perform(get("/betreuerProfil/deleteDocument/x").with(user("b").roles("BETREUER")))
+                    .andExpect(status().isMethodNotAllowed());
+        }
+
+        @Test
+        void deleteFachgebiet_per_get_405() throws Exception {
+            mvc.perform(get("/betreuerProfil/deleteFachgebiet")
+                            .param("fachgebietToDelete", "ki")
+                            .with(user("b").roles("BETREUER")))
+                    .andExpect(status().isMethodNotAllowed());
+        }
+
+        @Test
+        void thema_anfragen_per_get_405() throws Exception {
+            mvc.perform(get("/homestudi/request/" + THEME_ID))
+                    .andExpect(status().isMethodNotAllowed());
+        }
+
+        @Test
+        void deleteTheme_per_post_ohne_csrf_403() throws Exception {
+            mvc.perform(post("/betreuerProfil/deleteTheme/" + THEME_ID).with(user("b").roles("BETREUER")))
+                    .andExpect(status().isForbidden());
+        }
+    }
 }

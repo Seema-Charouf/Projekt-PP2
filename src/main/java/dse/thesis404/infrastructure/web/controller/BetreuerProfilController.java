@@ -284,15 +284,6 @@ public class BetreuerProfilController {
         return deleteVeranstaltungFromNewThemeInternal(veranstaltungToDelete, themeForm, model, ra);
     }
 
-    @GetMapping("/themes/new/deleteVeranstaltung")
-    public String deleteVeranstaltungFromNewThemeGet(
-            @RequestParam("veranstaltungToDelete") String veranstaltungToDelete,
-            @ModelAttribute("themeForm") ThemeForm themeForm,
-            Model model,
-            RedirectAttributes ra
-    ) {
-        return deleteVeranstaltungFromNewThemeInternal(veranstaltungToDelete, themeForm, model, ra);
-    }
 
     private String deleteVeranstaltungFromNewThemeInternal(String veranstaltungToDelete, ThemeForm themeForm, Model model, RedirectAttributes ra) {
         if (veranstaltungToDelete == null || veranstaltungToDelete.isBlank()) {
@@ -411,15 +402,6 @@ public class BetreuerProfilController {
         return deleteVeranstaltungFromThemeInternal(rawThemeId, veranstaltungToDelete, principal, ra);
     }
 
-    @GetMapping("/editTheme/{id}/deleteVeranstaltung")
-    public String deleteVeranstaltungFromThemeGet(
-            @PathVariable("id") String rawThemeId,
-            @RequestParam("veranstaltungToDelete") String veranstaltungToDelete,
-            Principal principal,
-            RedirectAttributes ra
-    ) {
-        return deleteVeranstaltungFromThemeInternal(rawThemeId, veranstaltungToDelete, principal, ra);
-    }
 
     private String deleteVeranstaltungFromThemeInternal(String rawThemeId, String veranstaltungToDelete, Principal principal, RedirectAttributes ra) {
         if (veranstaltungToDelete == null || veranstaltungToDelete.isBlank()) {
@@ -439,10 +421,6 @@ public class BetreuerProfilController {
         return deleteThemeInternal(rawThemeId, principal, ra);
     }
 
-    @GetMapping("/deleteTheme/{id}")
-    public String deleteThemeGet(@PathVariable("id") String rawThemeId, Principal principal, RedirectAttributes ra) {
-        return deleteThemeInternal(rawThemeId, principal, ra);
-    }
 
     private String deleteThemeInternal(String rawThemeId, Principal principal, RedirectAttributes ra) {
         ProfileId myId = currentProfileId(principal);
@@ -492,10 +470,6 @@ public class BetreuerProfilController {
         return deleteFachgebietInternal(fachgebietKey, principal, ra);
     }
 
-    @GetMapping("/deleteFachgebiet")
-    public String deleteFachgebietGet(@RequestParam("fachgebietToDelete") String fachgebietKey, Principal principal, RedirectAttributes ra) {
-        return deleteFachgebietInternal(fachgebietKey, principal, ra);
-    }
 
     private String deleteFachgebietInternal(String fachgebietKey, Principal principal, RedirectAttributes ra) {
         if (fachgebietKey == null || fachgebietKey.isBlank()) {
@@ -573,10 +547,6 @@ public class BetreuerProfilController {
         return deleteDocumentInternal(rawFileId, principal, ra);
     }
 
-    @GetMapping("/deleteDocument/{id}")
-    public String deleteDocumentGet(@PathVariable("id") String rawFileId, Principal principal, RedirectAttributes ra) {
-        return deleteDocumentInternal(rawFileId, principal, ra);
-    }
 
     private String deleteDocumentInternal(String rawFileId, Principal principal, RedirectAttributes ra) {
         if (rawFileId == null || rawFileId.isBlank()) {
@@ -642,15 +612,6 @@ public class BetreuerProfilController {
         return "redirect:/betreuerProfil";
     }
 
-    @GetMapping("/acceptTheme/{id}")
-    public String acceptThemeGet(@PathVariable("id") String requestId, Principal principal, RedirectAttributes ra) {
-        return acceptTheme(requestId, principal, ra);
-    }
-
-    @GetMapping("/declineTheme/{id}")
-    public String declineThemeGet(@PathVariable("id") String requestId, Principal principal, RedirectAttributes ra) {
-        return declineTheme(requestId, principal, ra);
-    }
 
     
     public record StudentThemeRequestVm(

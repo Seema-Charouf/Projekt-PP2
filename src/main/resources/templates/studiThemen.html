@@ -42,7 +42,9 @@
               <span class="badge bg-success">Anfrage gesendet</span>
             </th:block>
             <th:block th:unless="${requestedThemeIds != null and requestedThemeIds.contains(two.theme.id.toString())}">
-              <a th:href="@{/homestudi/request/{tid}(tid=${two.theme.id})}" class="btn btn-sm btn-primary">Thema anfragen</a>
+              <form th:action="@{/homestudi/request/{tid}(tid=${two.theme.id})}" method="post" class="d-inline">
+                <button type="submit" class="btn btn-sm btn-primary">Thema anfragen</button>
+              </form>
             </th:block>
           </th:block>
           <span th:unless="${isLoggedIn}" class="text-muted small">Bitte einloggen, um anzufragen.</span>

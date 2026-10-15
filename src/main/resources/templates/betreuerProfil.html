@@ -54,11 +54,13 @@
           <td th:text="${request.themeTitle()}">Theme Name</td>
           <td th:text="${request.studentDisplayName()}">Student Name</td>
           <td>
-            <a th:unless="${request.accepted()}"
-               th:href="@{/betreuerProfil/acceptTheme/{id}(id=${request.id()})}"
-               class="btn btn-success btn-sm">Accept</a>
-            <a th:href="@{/betreuerProfil/declineTheme/{id}(id=${request.id()})}"
-               class="btn btn-danger btn-sm">Decline</a>
+            <form th:unless="${request.accepted()}"
+                  th:action="@{/betreuerProfil/acceptTheme/{id}(id=${request.id()})}" method="post" class="d-inline">
+              <button type="submit" class="btn btn-success btn-sm">Accept</button>
+            </form>
+            <form th:action="@{/betreuerProfil/declineTheme/{id}(id=${request.id()})}" method="post" class="d-inline">
+              <button type="submit" class="btn btn-danger btn-sm">Decline</button>
+            </form>
           </td>
         </tr>
         <tr th:if="${#lists.isEmpty(requests)}">
@@ -98,9 +100,10 @@
         <div class="btn-group" role="group">
           <a th:href="@{/betreuerProfil/editTheme/{id}(id=${theme.id})}"
              class="btn btn-outline-secondary btn-sm">Bearbeiten</a>
-          <a th:href="@{/betreuerProfil/deleteTheme/{id}(id=${theme.id})}"
-             class="btn btn-outline-danger btn-sm"
-             onclick="return confirm('Sind Sie sicher, dass Sie dieses Thema löschen möchten?')">Löschen</a>
+          <form th:action="@{/betreuerProfil/deleteTheme/{id}(id=${theme.id})}" method="post" class="d-inline"
+                onsubmit="return confirm('Sind Sie sicher, dass Sie dieses Thema löschen möchten?')">
+            <button type="submit" class="btn btn-outline-danger btn-sm">Löschen</button>
+          </form>
         </div>
       </li>
     </ul>
@@ -129,9 +132,11 @@
     <ul class="list-group" th:if="${myBetreuerProfile.fachgebiete != null and !#lists.isEmpty(myBetreuerProfile.fachgebiete)}">
       <li th:each="fachgebiet : ${myBetreuerProfile.fachgebiete}" class="list-group-item d-flex justify-content-between align-items-center">
         <span th:text="${fachgebiet.fachgebiet()}">Fachgebiet</span>
-        <a th:href="@{/betreuerProfil/deleteFachgebiet(fachgebietToDelete=${fachgebiet.key()})}"
-           class="btn btn-outline-danger btn-sm"
-           onclick="return confirm('Sind Sie sicher, dass Sie dieses Fachgebiet löschen möchten?')">Löschen</a>
+        <form th:action="@{/betreuerProfil/deleteFachgebiet}" method="post" class="d-inline"
+              onsubmit="return confirm('Sind Sie sicher, dass Sie dieses Fachgebiet löschen möchten?')">
+          <input type="hidden" name="fachgebietToDelete" th:value="${fachgebiet.key()}">
+          <button type="submit" class="btn btn-outline-danger btn-sm">Löschen</button>
+        </form>
       </li>
     </ul>
     <div th:if="${myBetreuerProfile.fachgebiete == null or #lists.isEmpty(myBetreuerProfile.fachgebiete)}" class="alert alert-info">
@@ -179,9 +184,10 @@
                 Typ: <span th:text="${doc.type()}">PDF</span>
               </small>
             </div>
-            <a th:href="@{/betreuerProfil/deleteDocument/{id}(id=${doc.id()})}"
-               class="btn btn-outline-danger btn-sm"
-               onclick="return confirm('Sind Sie sicher, dass Sie dieses Dokument löschen möchten?')">Löschen</a>
+            <form th:action="@{/betreuerProfil/deleteDocument/{id}(id=${doc.id()})}" method="post" class="d-inline"
+                  onsubmit="return confirm('Sind Sie sicher, dass Sie dieses Dokument löschen möchten?')">
+              <button type="submit" class="btn btn-outline-danger btn-sm">Löschen</button>
+            </form>
           </div>
         </div>
       </div>
