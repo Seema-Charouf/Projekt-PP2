@@ -18,7 +18,9 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oauth2Login;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -77,6 +79,24 @@ class FehlerbehandlungTest {
     @Test
     void login_debug_existiert_ausserhalb_von_dev_nicht() throws Exception {
         mvc.perform(get("/login-debug").with(alsBetreuer(BETREUER_A)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void anfrage_zu_fremdem_thema_annehmen_403() throws Exception {
+        profilAnlegen(BETREUER_A);
+        profilAnlegen(BETREUER_B);
+        ThemeId themaVonA = themeService.createTheme(ProfileId.ofGithubUserId(BETREUER_A), "Anfrage-Thema", "");
+
+        mvc.perform(post("/betreuerProfil/acceptTheme/99:" + themaVonA).with(csrf()).with(alsBetreuer(BETREUER_B)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void fremdes_dokument_herunterladen_404() throws Exception {
+        profilAnlegen(BETREUER_A);
+
+        mvc.perform(get("/betreuerProfil/documents/" + java.util.UUID.randomUUID()).with(alsBetreuer(BETREUER_A)))
                 .andExpect(status().isNotFound());
     }
 }

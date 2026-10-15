@@ -1,5 +1,7 @@
 package dse.thesis404.application.service;
 
+import dse.thesis404.application.exception.ZugriffVerweigertException;
+
 import dse.thesis404.application.exception.NichtGefundenException;
 import dse.thesis404.application.command.UploadInfoFileCommand;
 import dse.thesis404.application.port.BetreuerProfilRepository;
@@ -74,21 +76,40 @@ public class BetreuerProfilService {
     
     @Transactional
     public void acceptRequest(ProfileId betreuerId, ProfileId studentId, ThemeId themeId) {
-        Theme theme = themeRepository.findById(themeId).orElseThrow(() -> new NichtGefundenException("Thema nicht gefunden"));
-        if (!theme.getOwnerProfileId().equals(betreuerId)) {
-            throw new IllegalArgumentException("Thema gehört nicht diesem Betreuer");
-        }
+        pruefeEigeneAnfrage(betreuerId, studentId, themeId);
         studentThemeRequestRepository.save(new StudentThemeRequest(studentId, themeId, RequestStatus.ACCEPTED));
     }
 
     
     @Transactional
     public void declineRequest(ProfileId betreuerId, ProfileId studentId, ThemeId themeId) {
-        Theme theme = themeRepository.findById(themeId).orElseThrow(() -> new NichtGefundenException("Thema nicht gefunden"));
-        if (!theme.getOwnerProfileId().equals(betreuerId)) {
-            throw new IllegalArgumentException("Thema gehört nicht diesem Betreuer");
-        }
+        pruefeEigeneAnfrage(betreuerId, studentId, themeId);
         studentThemeRequestRepository.save(new StudentThemeRequest(studentId, themeId, RequestStatus.DECLINED));
+    }
+
+    /**
+     * Ein Betreuer darf nur Anfragen zu seinen eigenen Themen bearbeiten – und nur Anfragen, die es wirklich gibt.
+     * Vorher konnte man durch "Annehmen" einer erfundenen Anfrage-ID einen neuen Datensatz erzeugen.
+     */
+    private void pruefeEigeneAnfrage(ProfileId betreuerId, ProfileId studentId, ThemeId themeId) {
+        Theme theme = themeRepository.findById(themeId)
+                .orElseThrow(() -> new NichtGefundenException("Thema nicht gefunden: " + themeId));
+        if (!theme.getOwnerProfileId().equals(betreuerId)) {
+            throw new ZugriffVerweigertException("Thema " + themeId + " gehört nicht Betreuer " + betreuerId);
+        }
+        if (!studentThemeRequestRepository.exists(studentId, themeId)) {
+            throw new NichtGefundenException("Keine Anfrage von " + studentId + " zu Thema " + themeId);
+        }
+    }
+
+    /** Liefert eine Datei nur, wenn sie zum Profil des anfragenden Betreuers gehört. */
+    @Transactional(readOnly = true)
+    public Datei getEigeneDatei(ProfileId profileId, FileId fileId) {
+        Objects.requireNonNull(fileId, "fileId");
+        return getById(profileId).getFiles().stream()
+                .filter(f -> f.id().equals(fileId))
+                .findFirst()
+                .orElseThrow(() -> new NichtGefundenException("Datei nicht gefunden: " + fileId));
     }
 
     @Transactional(readOnly = true)
