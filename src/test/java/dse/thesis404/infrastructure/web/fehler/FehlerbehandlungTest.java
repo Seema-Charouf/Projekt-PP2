@@ -1,5 +1,6 @@
 package dse.thesis404.infrastructure.web.fehler;
 
+import dse.thesis404.testutil.GithubLogin;
 import dse.thesis404.application.port.BetreuerProfilRepository;
 import dse.thesis404.application.service.ThemeService;
 import dse.thesis404.domain.model.shared.ProfileId;
@@ -47,9 +48,7 @@ class FehlerbehandlungTest {
     }
 
     private static RequestPostProcessor alsBetreuer(long githubId) {
-        return oauth2Login()
-                .attributes(a -> a.put("id", githubId))
-                .authorities(new SimpleGrantedAuthority("ROLE_BETREUER"));
+        return GithubLogin.als(githubId, "BETREUER");
     }
 
     @Test

@@ -1,5 +1,6 @@
 package dse.thesis404.infrastructure.web.xss;
 
+import dse.thesis404.testutil.GithubLogin;
 import dse.thesis404.application.port.BetreuerProfilRepository;
 import dse.thesis404.application.service.ThemeService;
 import dse.thesis404.domain.model.shared.ProfileId;
@@ -48,10 +49,7 @@ class XssIntegrationTest {
     }
 
     private org.springframework.test.web.servlet.ResultActions themaSeiteAufrufen(ThemeId id) throws Exception {
-        return mvc.perform(get("/betreuerProfil/theme/" + id)
-                .with(oauth2Login()
-                        .attributes(a -> a.put("id", GITHUB_ID))
-                        .authorities(new SimpleGrantedAuthority("ROLE_BETREUER"))));
+        return mvc.perform(get("/betreuerProfil/theme/" + id).with(GithubLogin.als(GITHUB_ID, "BETREUER")));
     }
 
     @Test

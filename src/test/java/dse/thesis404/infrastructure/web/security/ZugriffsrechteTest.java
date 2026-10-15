@@ -1,5 +1,6 @@
 package dse.thesis404.infrastructure.web.security;
 
+import dse.thesis404.testutil.GithubLogin;
 import dse.thesis404.application.port.BetreuerProfilRepository;
 import dse.thesis404.application.service.ThemeService;
 import dse.thesis404.domain.model.shared.ProfileId;
@@ -42,10 +43,7 @@ class ZugriffsrechteTest {
     private ThemeService themeService;
 
     private static RequestPostProcessor login(long githubId, String... rollen) {
-        SimpleGrantedAuthority[] authorities = java.util.Arrays.stream(rollen)
-                .map(r -> new SimpleGrantedAuthority("ROLE_" + r))
-                .toArray(SimpleGrantedAuthority[]::new);
-        return oauth2Login().attributes(a -> a.put("id", githubId)).authorities(authorities);
+        return GithubLogin.als(githubId, rollen);
     }
 
     private ThemeId themaVonA() {

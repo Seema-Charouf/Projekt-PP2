@@ -1,5 +1,6 @@
 package dse.thesis404.infrastructure.web.security;
 
+import dse.thesis404.testutil.GithubLogin;
 import dse.thesis404.application.port.BetreuerProfilRepository;
 import dse.thesis404.testutil.BetreuerProfilMother;
 import org.junit.jupiter.api.DisplayName;
@@ -157,9 +158,7 @@ class SecurityMvcTest {
             if (betreuerProfilRepository.findByGithubId(4713L).isEmpty()) {
                 betreuerProfilRepository.save(BetreuerProfilMother.withGithubId(4713L));
             }
-            mvc.perform(get("/betreuerProfil").with(oauth2Login()
-                            .attributes(a -> a.put("id", 4713L))
-                            .authorities(new SimpleGrantedAuthority("ROLE_BETREUER"))))
+            mvc.perform(get("/betreuerProfil").with(GithubLogin.als(4713L, "BETREUER")))
                     .andExpect(status().isOk());
         }
     }
