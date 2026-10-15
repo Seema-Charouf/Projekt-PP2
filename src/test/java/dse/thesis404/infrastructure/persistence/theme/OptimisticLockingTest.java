@@ -1,5 +1,6 @@
 package dse.thesis404.infrastructure.persistence.theme;
 
+import dse.thesis404.testutil.PersistenzTest;
 import dse.thesis404.application.port.BetreuerProfilRepository;
 import dse.thesis404.application.port.ThemeRepository;
 import dse.thesis404.domain.model.shared.ProfileId;
@@ -10,15 +11,12 @@ import dse.thesis404.testutil.BetreuerProfilMother;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.OptimisticLockingFailureException;
-import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-@ActiveProfiles("test")
+@PersistenzTest
 @DisplayName("Optimistic Locking – gleichzeitige Änderungen werden erkannt")
 class OptimisticLockingTest {
 

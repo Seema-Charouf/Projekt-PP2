@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  * Datei-Metadaten sind unveränderlich: neue werden eingefügt, entfernte gelöscht, bestehende nicht angefasst.
  */
 @Component
-class DateiSynchronisierung {
+public class DateiSynchronisierung {
 
     private final DateiDataRepository dateiDataRepository;
 

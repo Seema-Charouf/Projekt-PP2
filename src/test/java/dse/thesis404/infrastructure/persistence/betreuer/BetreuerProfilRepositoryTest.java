@@ -1,18 +1,16 @@
 package dse.thesis404.infrastructure.persistence.betreuer;
 
+import dse.thesis404.testutil.PersistenzTest;
 import dse.thesis404.application.port.BetreuerProfilRepository;
 import dse.thesis404.domain.model.betreuer.BetreuerProfil;
 import dse.thesis404.testutil.BetreuerProfilMother;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-@ActiveProfiles("test")
+@PersistenzTest
 @DisplayName("BetreuerProfilRepository – Save/Load")
 class BetreuerProfilRepositoryTest {
 

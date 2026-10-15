@@ -4,16 +4,13 @@ spring:
       - org.springframework.boot.autoconfigure.security.oauth2.client.reactive.ReactiveOAuth2ClientAutoConfiguration
       - org.springframework.boot.autoconfigure.security.oauth2.resource.reactive.ReactiveOAuth2ResourceServerAutoConfiguration
   datasource:
-    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
-    driver-class-name: org.h2.Driver
-    username: sa
-    password: ''
+    # Testcontainers-JDBC-URL: startet beim ersten Zugriff einen echten PostgreSQL-Container
+    # (dieselbe Version wie in docker-compose.yml). TC_DAEMON=true: ein Container für den ganzen Testlauf.
+    url: jdbc:tc:postgresql:15-alpine:///thesis404?TC_DAEMON=true
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
   flyway:
-    enabled: false
-  sql:
-    init:
-      mode: always
-      schema-locations: classpath:schema-h2.sql
+    # Die Tests nutzen dieselben Flyway-Migrationen wie Produktion – kein separates Test-Schema mehr.
+    enabled: true
   security:
     oauth2:
       client:
