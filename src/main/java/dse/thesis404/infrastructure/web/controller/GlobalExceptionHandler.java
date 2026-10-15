@@ -1,9 +1,11 @@
 package dse.thesis404.infrastructure.web.controller;
 
+import dse.thesis404.application.exception.KonfliktException;
 import dse.thesis404.application.exception.NichtGefundenException;
 import dse.thesis404.application.exception.ZugriffVerweigertException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -35,6 +37,15 @@ public class GlobalExceptionHandler {
         log.info("Nicht gefunden: {}", ex.getMessage());
         return fehlerseite(model, 404, "Nicht gefunden",
                 "Das gesuchte Element existiert nicht (mehr).");
+    }
+
+    @ExceptionHandler({KonfliktException.class, OptimisticLockingFailureException.class})
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public String handleKonflikt(RuntimeException ex, Model model) {
+        log.info("Konflikt durch gleichzeitige Änderung: {}", ex.getMessage());
+        return fehlerseite(model, 409, "Gleichzeitige Änderung",
+                "Jemand hat diesen Eintrag geändert, während du ihn bearbeitet hast. "
+                        + "Bitte lade die Seite neu und versuche es noch einmal.");
     }
 
     private static String fehlerseite(Model model, int status, String titel, String text) {

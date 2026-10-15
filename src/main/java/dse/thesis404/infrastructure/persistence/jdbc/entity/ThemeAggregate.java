@@ -2,6 +2,7 @@ package dse.thesis404.infrastructure.persistence.jdbc.entity;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
+import org.springframework.data.annotation.Version;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.MappedCollection;
@@ -23,6 +24,10 @@ public class ThemeAggregate implements Persistable<UUID> {
 
     private String titel;
     private String beschreibung;
+
+    /** Spring Data JDBC: UPDATE ... WHERE theme_id = ? AND version = ?  – sonst OptimisticLockingFailureException */
+    @Version
+    private Long version;
 
     @MappedCollection(idColumn = "theme_id")
     private Set<ThemeFachgebiet> fachgebiete = new HashSet<>();
@@ -54,6 +59,14 @@ public class ThemeAggregate implements Persistable<UUID> {
 
     public void setNew(boolean isNew) {
         this.isNew = isNew;
+    }
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
     }
 
     public java.util.UUID getThemeId() {

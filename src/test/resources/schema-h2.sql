@@ -39,7 +39,8 @@ CREATE TABLE IF NOT EXISTS theme (
     theme_id UUID PRIMARY KEY,
     owner_profile_id BIGINT NOT NULL,
     titel VARCHAR(255) NOT NULL,
-    beschreibung VARCHAR(4000) NOT NULL
+    beschreibung VARCHAR(4000) NOT NULL,
+    version BIGINT NOT NULL DEFAULT 0
 );
 CREATE TABLE IF NOT EXISTS theme_veranstaltung (
     theme_id UUID NOT NULL,

@@ -132,6 +132,7 @@ public class BetreuerThemaController {
 
         ThemeForm form = new ThemeForm();
         form.setTitel(theme.getTitel());
+        form.setVersion(theme.getVersion());
         if (theme.getBeschreibung() != null) {
             form.setBeschreibungMarkdown(theme.getBeschreibung().markdown());
         }
@@ -168,8 +169,7 @@ public class BetreuerThemaController {
             return "editTheme";
         }
 
-        themeService.updateTitel(themeId, myId, form.getTitel());
-        themeService.updateBeschreibung(themeId, myId, form.getBeschreibungMarkdown());
+        themeService.updateThema(themeId, myId, form.getTitel(), form.getBeschreibungMarkdown(), form.getVersion());
         ra.addFlashAttribute("success", "Thema wurde aktualisiert.");
         return "redirect:/betreuerProfil";
     }

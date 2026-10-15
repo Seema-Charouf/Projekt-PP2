@@ -21,6 +21,8 @@ public final class Theme {
     private final List<Datei> files;
     private final List<Link> links;
     private final Set<Fachgebiet> fachgebiete;
+    /** Technische Versionsnummer für Optimistic Locking; null = noch nie gespeichert. */
+    private Long version;
 
     public Theme(ThemeId id, ProfileId ownerProfileId, String titel, Beschreibung beschreibung) {
         this.id = Objects.requireNonNull(id, "ThemeId darf nicht null sein!");
@@ -41,6 +43,15 @@ public final class Theme {
         return trimmed.replaceAll("\\s+", " ");
     }
     
+
+    public Long getVersion() {
+        return version;
+    }
+
+    /** Wird nur von der Persistenz aufgerufen (nach Laden bzw. Speichern). */
+    public void versionUebernehmen(Long version) {
+        this.version = version;
+    }
 
     public ThemeId getId() {
         return id;

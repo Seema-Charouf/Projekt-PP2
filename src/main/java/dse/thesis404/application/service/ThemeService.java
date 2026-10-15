@@ -1,5 +1,6 @@
 package dse.thesis404.application.service;
 
+import dse.thesis404.application.exception.KonfliktException;
 import dse.thesis404.application.exception.ZugriffVerweigertException;
 import dse.thesis404.application.exception.NichtGefundenException;
 import dse.thesis404.application.command.UploadInfoFileCommand;
@@ -101,6 +102,24 @@ public class ThemeService {
                         datei.storedFilename(), themeId);
             }
         }
+    }
+
+    /**
+     * Titel und Beschreibung in einem Schritt ändern. erwarteteVersion ist die Version, die der Nutzer
+     * im Formular gesehen hat – hat sich das Thema seitdem geändert, gibt es einen Konflikt statt
+     * eines stillen Überschreibens.
+     */
+    @Transactional
+    public void updateThema(ThemeId themeId, ProfileId actorProfileId, String titel, String markdown,
+                            Long erwarteteVersion) {
+        Theme theme = loadOwnedTheme(themeId, actorProfileId);
+        if (erwarteteVersion != null && !erwarteteVersion.equals(theme.getVersion())) {
+            throw new KonfliktException("Thema " + themeId + " wurde inzwischen geändert (erwartet Version "
+                    + erwarteteVersion + ", aktuell " + theme.getVersion() + ")");
+        }
+        theme.updateTitel(titel);
+        theme.updateBeschreibung(markdown == null ? "" : markdown);
+        themeRepository.save(theme);
     }
 
     @Transactional

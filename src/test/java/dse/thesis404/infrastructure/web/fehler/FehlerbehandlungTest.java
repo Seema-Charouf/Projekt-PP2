@@ -99,4 +99,28 @@ class FehlerbehandlungTest {
         mvc.perform(get("/betreuerProfil/documents/" + java.util.UUID.randomUUID()).with(alsBetreuer(BETREUER_A)))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    void veraltetes_formular_speichern_409_statt_ueberschreiben() throws Exception {
+        profilAnlegen(BETREUER_A);
+        ProfileId a = ProfileId.ofGithubUserId(BETREUER_A);
+        ThemeId id = themeService.createTheme(a, "Original", "");
+        Long alteVersion = themeService.getOwnedTheme(id, a).getVersion();
+
+        // Inzwischen ändert jemand anderes (z. B. ein zweiter Tab) das Thema
+        themeService.updateThema(id, a, "Aus dem anderen Tab", "", alteVersion);
+
+        // Das alte Formular wird mit der alten Version abgeschickt
+        mvc.perform(post("/betreuerProfil/editTheme/" + id)
+                        .with(csrf()).with(alsBetreuer(BETREUER_A))
+                        .sessionAttr("themeForm", new dse.thesis404.infrastructure.web.form.ThemeForm())
+                        .param("titel", "Aus dem alten Formular")
+                        .param("beschreibungMarkdown", "")
+                        .param("version", String.valueOf(alteVersion)))
+                .andExpect(status().isConflict())
+                .andExpect(content().string(containsString("Gleichzeitige Änderung")));
+
+        org.assertj.core.api.Assertions.assertThat(themeService.getOwnedTheme(id, a).getTitel())
+                .isEqualTo("Aus dem anderen Tab");
+    }
 }

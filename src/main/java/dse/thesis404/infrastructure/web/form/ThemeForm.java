@@ -20,6 +20,17 @@ public class ThemeForm {
     private List<DocumentMetaData> attachedFileMetaData = new ArrayList<>();
     private List<MultipartFile> files;
 
+    /** Version des Themas beim Öffnen des Formulars (verstecktes Feld) – für Optimistic Locking. */
+    private Long version;
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
+
     public UUID getId() {
         return id;
     }

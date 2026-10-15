@@ -66,7 +66,8 @@ public class JdbcThemeRepository implements ThemeRepository {
         dateien.neueEinfuegen(theme.getFiles(), alteDateiIds);
         ThemeAggregate agg = toAggregate(theme);
         agg.setNew(vorher.isEmpty());
-        themeDataRepository.save(agg);
+        ThemeAggregate gespeichert = themeDataRepository.save(agg);
+        theme.versionUebernehmen(gespeichert.getVersion());   // neue Version zurück ins Domain-Objekt
         dateien.entfernteLoeschen(alteDateiIds, theme.getFiles());
     }
 
@@ -95,6 +96,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                 agg.getTitel(),
                 new Beschreibung(agg.getBeschreibung() != null ? agg.getBeschreibung() : "")
         );
+        theme.versionUebernehmen(agg.getVersion());
 
         if (agg.getFachgebiete() != null) {
             agg.getFachgebiete().stream()
@@ -129,6 +131,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         agg.setOwnerProfileId(theme.getOwnerProfileId().value());
         agg.setTitel(theme.getTitel());
         agg.setBeschreibung(theme.getBeschreibung().toString());
+        agg.setVersion(theme.getVersion());
 
         Set<ThemeFachgebiet> fachgebiete = theme.getFachgebiete().stream()
                 .map(fg -> new ThemeFachgebiet(fg.fachgebiet()))

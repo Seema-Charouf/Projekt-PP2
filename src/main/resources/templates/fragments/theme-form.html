@@ -7,6 +7,8 @@
       
       
       <input th:if="${editMode != null && editMode}" type="hidden" th:name="themeId" th:value="${themeId}"/>
+      <!-- Version beim Öffnen: Hat jemand das Thema inzwischen geändert, gibt es 409 statt Überschreiben -->
+      <input type="hidden" th:field="*{version}"/>
 
       <div class="mb-3">
         <label for="titel" class="form-label">Titel *</label>
